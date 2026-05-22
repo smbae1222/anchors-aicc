@@ -1,0 +1,2688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchors AI Consultation Admin</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+:root {
+  --font: "Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --bg:#ffffff; --bg1:#f7f6f4; --bg2:#f0eeeb; --bg3:#e8e5e0;
+  --border:#d8d4ce; --border2:#c4bfb8; --border3:#a09890;
+  --t1:#111111; --t2:#3a3a3a; --t3:#636363; --t4:#909090;
+  --gold:#7a5a2e; --gold-d:rgba(122,90,46,.09); --gold-b:rgba(122,90,46,.32);
+  --green:#1e6b3e; --green-d:rgba(30,107,62,.08); --green-b:rgba(30,107,62,.35);
+  --warn:#6b5010; --warn-d:rgba(107,80,16,.08); --warn-b:rgba(107,80,16,.35);
+  --red:#962020; --red-d:rgba(150,32,32,.08); --red-b:rgba(150,32,32,.35);
+  --blue:#2a5a96; --blue-d:rgba(42,90,150,.08); --blue-b:rgba(42,90,150,.35);
+  --dur:180ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);font-size:13px;font-weight:450;line-height:21px;background:var(--bg);color:var(--t2);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:var(--font);font-size:13px;font-weight:450}
+:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2)}
+
+/* ── NAV ── */
+/* GNB 다크모드 — .nav 범위 내 변수만 로컬 오버라이드 */
+.nav{
+  --bg:#0d0d0d; --bg1:#0d0d0d;
+  --border:#262626;
+  --t1:#f0f0f0; --t3:#888888; --t4:#555555;
+  --gold:#c8a96e; --gold-b:rgba(200,169,110,.3);
+  --green:#4d9e72;
+}
+.nav{position:fixed;top:0;left:0;right:0;z-index:400;height:44px;display:flex;align-items:center;background:var(--bg);border-bottom:1px solid var(--border)}
+.nav-logo{padding:0 16px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--t1);white-space:nowrap;border-right:1px solid var(--border);display:flex;align-items:center;gap:8px;font-weight:600}
+.logo-dot{width:6px;height:6px;background:var(--gold);border-radius:50%}
+.nav-tabs{display:flex;flex:1;overflow-x:auto}
+.nav-tabs::-webkit-scrollbar{display:none}
+.ntab{height:44px;padding:0 14px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--t3);font-size:11px;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;cursor:pointer;font-weight:500;transition:color var(--dur),border-color var(--dur)}
+.ntab:hover{color:var(--t1)}
+.ntab.on{color:var(--t1);border-bottom-color:var(--gold)}
+.nav-right{padding:0 14px;display:flex;align-items:center;gap:10px;border-left:1px solid var(--border);flex-shrink:0}
+.nav-pip{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.nav-role{font-size:10px;letter-spacing:.08em;padding:1px 7px;border:1px solid var(--gold-b);color:var(--gold);font-weight:600}
+.nav-user{font-size:11px;color:var(--t3);letter-spacing:.03em;font-weight:450}
+
+/* ── SHELL ── */
+.shell{display:flex;height:calc(100vh - 44px);margin-top:44px;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sb{width:192px;flex-shrink:0;border-right:1px solid var(--border);background:var(--bg1);display:flex;flex-direction:column;overflow-y:auto}
+.sb-grp{padding:12px 0 4px}
+.sb-grp-lbl{padding:0 12px 5px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--t4);font-weight:600}
+.sb-item{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;font-size:12px;letter-spacing:.02em;color:var(--t2);border-left:2px solid transparent;font-weight:450;transition:all var(--dur)}
+.sb-item:hover{color:var(--t1);background:rgba(0,0,0,.04)}
+.sb-item.on{color:var(--t1);border-left-color:var(--gold);background:var(--gold-d);font-weight:550}
+.sb-item i{font-size:11px;width:14px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;padding:1px 5px;background:var(--red-d);color:var(--red);border:1px solid var(--red-b);letter-spacing:.04em;font-weight:600}
+.sb-badge.warn{background:var(--warn-d);color:var(--warn);border-color:var(--warn-b)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.page{display:none;flex:1;flex-direction:column;overflow:hidden}
+.page.on{display:flex}
+
+/* ── TOPBAR ── */
+.topbar{flex-shrink:0;padding:10px 18px;border-bottom:1px solid var(--border);background:var(--bg1);display:flex;align-items:flex-start;justify-content:space-between}
+.topbar-title{font-size:14px;color:var(--t1);letter-spacing:.03em;font-weight:600}
+.topbar-sub{font-size:11px;color:var(--t3);margin-top:2px;letter-spacing:.02em}
+.topbar-acts{display:flex;gap:5px;align-items:center;flex-shrink:0}
+
+/* ── BTNS ── */
+.btn{height:26px;padding:0 11px;background:transparent;border:1px solid var(--border2);color:var(--t2);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;font-weight:550;transition:all var(--dur)}
+.btn:hover{border-color:var(--border3);color:var(--t1)}
+.btn.gold{border-color:var(--gold-b);color:var(--gold)}
+.btn.gold:hover{background:var(--gold-d)}
+.btn.red{border-color:var(--red-b);color:var(--red)}
+.btn.green{border-color:var(--green-b);color:var(--green)}
+.btn.sm{height:22px;padding:0 8px;font-size:10px}
+.btn:disabled{opacity:.35;cursor:default}
+
+/* ── BADGES ── */
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;padding:1px 6px;border:1px solid;font-weight:600}
+.tag.green{border-color:var(--green-b);color:var(--green)}
+.tag.warn{border-color:var(--warn-b);color:var(--warn)}
+.tag.red{border-color:var(--red-b);color:var(--red)}
+.tag.blue{border-color:var(--blue-b);color:var(--blue)}
+.tag.gold{border-color:var(--gold-b);color:var(--gold)}
+.tag.gray{border-color:var(--border2);color:var(--t3)}
+
+/* ── CARDS ── */
+.grid{display:grid;gap:1px;background:var(--border)}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+.card{background:var(--bg1);padding:14px 16px}
+.card-lbl{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);margin-bottom:6px;font-weight:600}
+.card-val{font-size:20px;color:var(--t1);margin-bottom:3px;font-weight:550}
+.card-sub{font-size:11px;color:var(--t3)}
+.card-val.gold{color:var(--gold)}
+.card-val.green{color:var(--green)}
+.card-val.warn{color:var(--warn)}
+.card-val.red{color:var(--red)}
+
+/* ── SECTION ── */
+.sec{margin-top:1px;background:var(--border)}
+.sec-hd{background:var(--bg1);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.sec-title{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);font-weight:600}
+
+/* ── TABLE ── */
+.tbl-wrap{background:var(--bg1);overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:7px 12px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);text-align:left;font-weight:600;white-space:nowrap}
+td{padding:8px 12px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--border);vertical-align:middle;font-weight:450}
+td.w{color:var(--t1);font-weight:500}
+tbody tr:hover td{background:rgba(0,0,0,.03)}
+tbody tr:last-child td{border-bottom:none}
+
+/* ── FORM ── */
+.frow{display:flex;gap:1px;background:var(--border);margin-bottom:1px}
+.fcell{flex:1;background:var(--bg1);padding:10px 12px}
+.flbl{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--t3);margin-bottom:5px;font-weight:600}
+.finput{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--t1);padding:5px 9px;font-size:12px;letter-spacing:.02em;font-weight:450;transition:border-color var(--dur)}
+.finput:focus{outline:none;border-color:var(--gold)}
+.finput::placeholder{color:var(--t4)}
+.fselect{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--t2);padding:5px 9px;font-size:12px;cursor:pointer;font-weight:450}
+.fselect:focus{outline:none;border-color:var(--gold)}
+textarea.finput{resize:vertical}
+
+/* ── PROGRESS ── */
+.prog{height:2px;background:var(--border2);margin-top:4px}
+.prog-f{height:2px;transition:width .8s cubic-bezier(.25,1,.5,1)}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg1);flex-shrink:0}
+.tab{padding:0 14px;height:34px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--t3);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all var(--dur)}
+.tab:hover{color:var(--t1)}
+.tab.on{color:var(--t1);border-bottom-color:var(--gold);font-weight:600}
+
+/* ── FILTER STRIP ── */
+.fstrip{display:flex;gap:5px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg1);flex-shrink:0;overflow-x:auto;align-items:center}
+.fstrip::-webkit-scrollbar{display:none}
+.fchip{height:20px;padding:0 9px;background:transparent;border:1px solid var(--border2);color:var(--t3);font-size:10px;letter-spacing:.08em;cursor:pointer;white-space:nowrap;font-weight:550;transition:all var(--dur)}
+.fchip:hover{border-color:var(--border3);color:var(--t1)}
+.fchip.on{border-color:var(--gold-b);color:var(--gold);background:var(--gold-d)}
+.fsep{color:var(--border2);margin:0 2px}
+
+/* ── ALERTS ── */
+.alert{padding:7px 12px;border-left:2px solid;font-size:11px;letter-spacing:.02em;margin-bottom:1px;font-weight:500}
+.alert.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-d)}
+.alert.green{border-color:var(--green);color:var(--green);background:var(--green-d)}
+.alert.red{border-color:var(--red);color:var(--red);background:var(--red-d)}
+.alert.info{border-color:var(--blue);color:var(--blue);background:var(--blue-d)}
+
+/* ── BAR CHART ── */
+.barchart{display:flex;flex-direction:column;gap:7px}
+.br{display:flex;align-items:center;gap:8px}
+.bk{width:120px;font-size:11px;color:var(--t2);text-align:right;flex-shrink:0;font-weight:500}
+.btrack{flex:1;height:2px;background:var(--border2)}
+.bfill{height:2px;transition:width .9s cubic-bezier(.25,1,.5,1)}
+.bv{width:34px;font-size:11px;color:var(--t2);text-align:right;flex-shrink:0;font-weight:500}
+
+/* ── LOG ── */
+.loglist{font-size:11px}
+.logrow{display:flex;gap:8px;padding:5px 12px;border-bottom:1px solid var(--border);transition:background var(--dur);cursor:pointer}
+.logrow:hover{background:rgba(0,0,0,.035)}
+.logrow:last-child{border-bottom:none}
+.log-ts{color:var(--t3);flex-shrink:0;width:75px;font-family:monospace;font-size:10px;font-weight:500}
+.log-cmp{color:var(--t3);flex-shrink:0;width:70px;font-size:10px;letter-spacing:.05em;font-weight:550}
+.log-msg{color:var(--t2);flex:1;font-weight:450}
+.log-lv{flex-shrink:0;width:52px;text-align:right}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--bg1);border:1px solid var(--border2);width:480px;max-height:80vh;overflow-y:auto}
+.modal-hd{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:13px;color:var(--t1);letter-spacing:.04em;font-weight:600}
+.modal-close{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:16px;line-height:1}
+.modal-close:hover{color:var(--t1)}
+.modal-body{padding:16px}
+.modal-ft{padding:10px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:6px}
+
+/* ── UPLOAD ZONE ── */
+.drop-zone{border:1px dashed var(--border2);padding:28px;text-align:center;cursor:pointer;transition:all var(--dur)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gold-b);background:var(--gold-d)}
+.drop-ico{font-size:20px;color:var(--t3);margin-bottom:8px}
+.drop-txt{font-size:12px;color:var(--t2);letter-spacing:.03em;font-weight:500}
+.drop-sub{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* ── TYPING ── */
+.tdots{display:flex;gap:3px;align-items:center;padding:1px 0}
+.td{width:3px;height:3px;border-radius:50%;background:var(--t4);animation:td 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}
+.td:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
+
+/* ── SKELETON ── */
+.skel{background:var(--border);animation:sk 1.5s ease-in-out infinite}
+@keyframes sk{0%,100%{opacity:.3}50%{opacity:.7}}
+
+/* ── SCROLL CONTENT ── */
+.scroll-content{flex:1;overflow-y:auto;padding:16px}
+
+/* ── TOGGLE ── */
+.toggle-wrap{display:flex;align-items:center;gap:8px}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer;display:inline-block;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{
+  position:absolute;inset:0;
+  background:#767676;
+  border-radius:11px;
+  transition:background var(--dur)
+}
+.toggle-thumb{
+  position:absolute;
+  width:16px;height:16px;
+  top:3px;left:3px;
+  background:#ffffff;
+  border-radius:50%;
+  box-shadow:0 1px 4px rgba(0,0,0,.3);
+  transition:all var(--dur)
+}
+.toggle input:checked ~ .toggle-track{background:var(--gold)}
+.toggle input:checked ~ .toggle-thumb{left:21px}
+.toggle-lbl{font-size:12px;color:var(--t2);font-weight:450}
+
+/* ── JOB ROW ── */
+.job-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);font-size:11px}
+.job-row:last-child{border-bottom:none}
+.job-row:hover{background:rgba(0,0,0,.035)}
+.job-name{flex:1;color:var(--t1);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.job-stage{width:90px;color:var(--t3);font-size:10px;letter-spacing:.05em;flex-shrink:0;font-weight:550}
+.job-time{width:50px;color:var(--t3);font-size:10px;font-family:monospace;flex-shrink:0;font-weight:500}
+
+/* ── ACTIVITY FEED ── */
+.act-item{display:flex;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border)}
+.act-item:last-child{border-bottom:none}
+.act-ico{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;margin-top:1px}
+.act-body{flex:1;min-width:0}
+.act-msg{font-size:12px;color:var(--t2);line-height:18px;font-weight:450}
+.act-ts{font-size:10px;color:var(--t3);margin-top:2px;font-weight:500}
+
+/* ── RANGE SLIDER ── */
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border2);border-radius:2px;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--gold);cursor:pointer}
+input[type=range]:focus{outline:none}
+
+/* ── CHIP ── */
+.chip{display:inline-block;font-size:10px;letter-spacing:.08em;padding:2px 8px;border:1px solid var(--gold-b);color:var(--gold);margin-right:4px;margin-bottom:4px;font-weight:600}
+
+/* ── PERF METRICS ── */
+.metric-row{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--border);font-size:11px}
+.metric-row:last-child{border-bottom:none}
+.mkey{width:160px;color:var(--t2);flex-shrink:0;font-weight:450}
+.mval{color:var(--t1);font-family:monospace;width:70px;flex-shrink:0;font-weight:600}
+.mgoal{color:var(--t3);font-size:10px;width:80px;flex-shrink:0;font-weight:500}
+.mtrack{flex:1;height:1px;background:var(--border2)}
+.mfill{height:1px;transition:width .8s ease}
+.mstatus{width:50px;text-align:right;flex-shrink:0}
+
+/* ── SLIDE PANEL ── */
+.sp-overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.45)}
+.sp-overlay.on{display:block}
+.sp-panel{position:fixed;top:0;right:-780px;width:780px;max-width:95vw;height:100vh;z-index:601;
+  background:var(--bg1);border-left:1px solid var(--border2);
+  display:flex;flex-direction:column;transition:right .25s cubic-bezier(.4,0,.2,1)}
+.sp-panel.on{right:0}
+.sp-hd{flex-shrink:0;padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;background:var(--bg1)}
+.sp-title{font-size:13px;color:var(--t1);letter-spacing:.03em;font-weight:600}
+.sp-meta{font-size:11px;color:var(--t3);margin-top:2px;font-weight:450}
+.sp-close{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:18px;line-height:1;padding:0 4px}
+.sp-close:hover{color:var(--t1)}
+.sp-body{flex:1;display:flex;overflow:hidden;gap:1px;background:var(--border)}
+.sp-log{flex:1;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+.sp-log-hd{flex-shrink:0;padding:8px 12px;border-bottom:1px solid var(--border);
+  font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);font-weight:600;
+  display:flex;align-items:center;justify-content:space-between}
+.sp-msgs{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:8px}
+.sp-sum{width:280px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg1);overflow:hidden}
+.sp-sum-hd{flex-shrink:0;padding:8px 12px;border-bottom:1px solid var(--border);
+  font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);font-weight:600;
+  display:flex;align-items:center;justify-content:space-between}
+.sp-sum-body{flex:1;overflow-y:auto;padding:12px}
+.bbl{max-width:80%;padding:6px 10px;font-size:12px;line-height:18px;letter-spacing:.01em;font-weight:450}
+.bbl-row{display:flex;gap:6px;align-items:flex-start}
+.bbl-row.usr{flex-direction:row-reverse}
+.bbl-avi{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:8px;letter-spacing:.06em;margin-top:1px}
+.bbl-avi.ai{background:var(--t1);color:var(--bg)}
+.bbl-avi.usr{background:var(--border2);color:var(--t2)}
+.bbl.ai{background:var(--bg2);border:1px solid var(--border);color:var(--t2)}
+.bbl.usr{background:#efefef;color:#1a1a1a}
+.bbl-ts{font-size:10px;color:var(--t3);margin-top:2px;display:block;font-weight:500}
+.bbl-row.usr .bbl-ts{text-align:right}
+.sid-link{display:inline-flex;align-items:center;gap:4px;font-family:monospace;font-size:11px;
+  color:var(--gold);border-bottom:1px solid var(--gold-b);cursor:pointer;letter-spacing:.03em;font-weight:600}
+.sid-link:hover{color:var(--t1);border-color:var(--t1)}
+.sum-preview{font-size:11px;color:var(--t3);max-width:200px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;letter-spacing:.01em;font-weight:450}
+.sum-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:1px}
+
+/* ── SEARCH RESULT CARDS ── */
+.result-card{
+  background:var(--bg1);
+  border:1px solid var(--border2);
+  margin-bottom:8px;
+  border-radius:4px;
+  overflow:hidden;
+}
+.result-hd{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+}
+.result-rank{
+  width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;flex-shrink:0;
+  background:var(--border2);color:var(--t2);
+}
+.result-src-text{
+  flex:1;font-size:11px;color:var(--gold);
+  font-family:monospace;font-weight:600;
+  letter-spacing:.02em;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.result-score-wrap{
+  display:flex;align-items:center;gap:6px;flex-shrink:0;
+}
+.result-score-num{
+  font-size:12px;font-weight:700;font-family:monospace;min-width:32px;text-align:right;
+}
+.result-score-bar{
+  width:60px;height:3px;background:var(--border2);border-radius:2px;
+}
+.result-score-fill{
+  height:3px;border-radius:2px;
+  transition:width .6s cubic-bezier(.25,1,.5,1);
+}
+.result-body{
+  padding:10px 12px;
+  font-size:12px;line-height:19px;
+  color:var(--t2);letter-spacing:.01em;font-weight:450;
+  border-left:3px solid transparent;
+}
+.result-body.rank-1{border-left-color:var(--green)}
+.result-body.rank-2{border-left-color:var(--warn)}
+.result-body.rank-3{border-left-color:var(--border2)}
+
+/* ── PIPELINE FLOW DIAGRAM ── */
+.pipe-flow{display:flex;align-items:center;padding:24px 20px;overflow-x:auto;gap:0;min-height:130px}
+.pipe-flow::-webkit-scrollbar{height:4px}
+.pipe-flow::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.pf-node{flex-shrink:0;display:flex;flex-direction:column;align-items:center;width:108px}
+.pf-card{width:100%;border:2px solid var(--border2);border-radius:12px;padding:12px 10px;text-align:center;background:var(--bg1);cursor:pointer;transition:all var(--dur);position:relative}
+.pf-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.pf-card.done{background:#f0f7f3;border-color:var(--green-b)}
+.pf-card.running{background:#fdf6ec;border-color:var(--gold-b);animation:pfpulse 1.8s ease-in-out infinite}
+.pf-card.waiting{background:var(--bg2);border-color:var(--border2);opacity:.65}
+@keyframes pfpulse{0%,100%{box-shadow:0 0 0 0 rgba(122,90,46,.18)}50%{box-shadow:0 0 0 6px rgba(122,90,46,0)}}
+.pf-ico{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 7px;font-size:12px;font-weight:700}
+.pf-ico.done{background:var(--green);color:#fff}
+.pf-ico.running{background:var(--gold);color:#fff}
+.pf-ico.waiting{background:var(--border2);color:var(--t3)}
+.pf-name{font-size:11px;font-weight:650;color:var(--t1);letter-spacing:.02em;margin-bottom:5px;line-height:1.3}
+.pf-status{font-size:10px;letter-spacing:.06em;font-weight:600;text-transform:uppercase}
+.pf-status.done{color:var(--green)}
+.pf-status.running{color:var(--gold)}
+.pf-status.waiting{color:var(--t3)}
+.pf-time{font-size:10px;color:var(--t3);margin-top:3px;font-family:monospace;font-weight:500}
+.pf-arrow{flex-shrink:0;display:flex;align-items:center;padding:0 4px;margin-top:-8px}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo"><div class="logo-dot"></div>Anchors AI Consultation&nbsp;<span style="color:var(--t3)">Admin</span></div>
+  <div class="nav-tabs">
+    <button class="ntab on"  onclick="goto('dash',this)">대시보드</button>
+    <button class="ntab"     onclick="goto('consult',this)">상담 이력</button>
+    <button class="ntab"     onclick="goto('nlp',this)">NLP 가드레일</button>
+    <button class="ntab"     onclick="goto('workflow',this)">워크플로우</button>
+    <button class="ntab"     onclick="goto('data',this)">데이터 관리</button>
+    <button class="ntab"     onclick="goto('pipe',this)">파이프라인</button>
+    <button class="ntab"     onclick="goto('search',this)">검색 품질</button>
+    <button class="ntab"     onclick="goto('mon',this)">모니터링</button>
+    <button class="ntab"     onclick="goto('users',this)">사용자 관리</button>
+    <button class="ntab"     onclick="goto('sysset',this)">시스템 설정</button>
+  </div>
+  <div class="nav-right">
+    <div class="nav-pip" title="시스템 정상"></div>
+    <span class="nav-role">SUPER_ADMIN</span>
+    <span class="nav-user">admin@anchors-biz.com</span>
+  </div>
+</nav>
+
+<div class="shell">
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">개요</div>
+    <div class="sb-item on" data-page="dash" onclick="sb(this,'dash')" tabindex="0"><i>◈</i>시스템 현황</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">상담 이력</div>
+    <div class="sb-item" data-page="consult" onclick="sb(this,'consult',0)" tabindex="0"><i>▤</i>대화 로그 조회</div>
+    <div class="sb-item" data-page="consult" onclick="sb(this,'consult',1)" tabindex="0"><i>✎</i>요약본 검수</div>
+    <div class="sb-item" data-page="consult" onclick="sb(this,'consult',2)" tabindex="0"><i>◑</i>프롬프트 버전 관리</div>
+    <div class="sb-item" data-page="consult" onclick="sb(this,'consult',3)" tabindex="0"><i>↗</i>파인튜닝 데이터셋</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">NLP 가드레일</div>
+    <div class="sb-item" data-page="nlp" onclick="sb(this,'nlp',0)" tabindex="0"><i>✕</i>금칙어 · 블랙리스트</div>
+    <div class="sb-item" data-page="nlp" onclick="sb(this,'nlp',1)" tabindex="0"><i>↔</i>유사어 · 동의어 사전</div>
+    <div class="sb-item" data-page="nlp" onclick="sb(this,'nlp',2)" tabindex="0"><i>○</i>불용어 사전</div>
+    <div class="sb-item" data-page="nlp" onclick="sb(this,'nlp',3)" tabindex="0"><i>⚠</i>할루시네이션 가드레일<span class="sb-badge warn">2</span></div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">워크플로우</div>
+    <div class="sb-item" data-page="workflow" onclick="sb(this,'workflow',0)" tabindex="0"><i>⚙</i>LLM 하이퍼파라미터</div>
+    <div class="sb-item" data-page="workflow" onclick="sb(this,'workflow',1)" tabindex="0"><i>⬡</i>RAG · Vector DB</div>
+    <div class="sb-item" data-page="workflow" onclick="sb(this,'workflow',2)" tabindex="0"><i>▷</i>라우팅 · 분기 규칙</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">데이터</div>
+    <div class="sb-item" data-page="data" onclick="sb(this,'data')" tabindex="0"><i>▤</i>소스 목록</div>
+    <div class="sb-item" data-page="data" onclick="sb(this,'data');showUploadModal()" tabindex="0"><i>↑</i>파일 업로드</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">파이프라인</div>
+    <div class="sb-item" data-page="pipe" onclick="sb(this,'pipe',0)" tabindex="0"><i>▷</i>파이프라인 현황</div>
+    <div class="sb-item" data-page="pipe" onclick="sb(this,'pipe',1)" tabindex="0"><i>≡</i>작업 큐<span class="sb-badge warn">3</span></div>
+    <div class="sb-item" data-page="pipe" onclick="sb(this,'pipe',2)" tabindex="0"><i>⚙</i>청킹 · 임베딩 설정</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">검색 품질</div>
+    <div class="sb-item" data-page="search" onclick="sb(this,'search',0)" tabindex="0"><i>⌕</i>테스트 플레이그라운드</div>
+    <div class="sb-item" data-page="search" onclick="sb(this,'search',1)" tabindex="0"><i>◑</i>평가 데이터셋</div>
+    <div class="sb-item" data-page="search" onclick="sb(this,'search',2)" tabindex="0"><i>⊞</i>검색 파라미터</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-grp-lbl">모니터링</div>
+    <div class="sb-item" data-page="mon" onclick="sb(this,'mon')" tabindex="0"><i>◉</i>성능 대시보드</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+<div class="page on" id="p-dash">
+  <div class="topbar">
+    <div><div class="topbar-title">시스템 현황 대시보드</div><div class="topbar-sub">5분 주기 자동 갱신 · 마지막 갱신 <span id="dash-ts">14:38</span></div></div>
+    <div class="topbar-acts"><button class="btn" onclick="refreshDash()">새로고침</button><button class="btn gold">CSV 내보내기</button></div>
+  </div>
+  <div class="scroll-content">
+
+    <!-- KPI -->
+    <div class="grid g4" style="margin-bottom:1px">
+      <div class="card"><div class="card-lbl">총 색인 문서</div><div class="card-val" id="kpi-docs">1,284</div><div class="card-sub">어제 대비 +18건</div></div>
+      <div class="card"><div class="card-lbl">오늘 처리 쿼리</div><div class="card-val gold" id="kpi-qry">3,472</div><div class="card-sub">QPS 평균 2.4</div></div>
+      <div class="card"><div class="card-lbl">평균 응답 시간</div><div class="card-val green" id="kpi-rt">842ms</div><div class="card-sub">P99: 1,840ms</div></div>
+      <div class="card"><div class="card-lbl">색인 실패</div><div class="card-val red" id="kpi-fail">3</div><div class="card-sub" style="color:var(--red)">조치 필요</div></div>
+    </div>
+
+    <!-- SECONDARY KPI -->
+    <div class="grid g4" style="margin-bottom:1px">
+      <div class="card"><div class="card-lbl">검색 성공률</div><div class="card-val green">94.2%</div><div class="card-sub">목표 90%</div></div>
+      <div class="card"><div class="card-lbl">생성 정확도</div><div class="card-val green">96.8%</div><div class="card-sub">목표 95%</div></div>
+      <div class="card"><div class="card-lbl">파이프라인 대기</div><div class="card-val warn">7</div><div class="card-sub">진행 중 2</div></div>
+      <div class="card"><div class="card-lbl">활성 사용자</div><div class="card-val">4</div><div class="card-sub">세션 유지 중</div></div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="grid g2" style="margin-bottom:1px">
+      <div class="card">
+        <div class="card-lbl" style="margin-bottom:10px">쿼리 수 추이 (최근 7일)</div>
+        <div class="spark" id="sparkDash"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="font-size:10px;color:var(--t4)">05-12</span>
+          <span style="font-size:10px;color:var(--t4)">05-18</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-lbl" style="margin-bottom:10px">파이프라인 단계별 성공률</div>
+        <div class="barchart" id="dashBarChart"></div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="alert red" style="margin-bottom:1px">⚠ 색인 실패 3건 — <span style="text-decoration:underline;cursor:pointer" onclick="gotoById('data')">데이터 관리에서 확인</span></div>
+    <div class="alert warn" style="margin-bottom:1px">응답 시간 P99 목표(2,000ms) 근접 중 — 현재 1,840ms</div>
+
+    <!-- INDEXING STATUS CARD -->
+    <div class="sec">
+      <div class="sec-hd"><span class="sec-title">인덱싱 파이프라인 현황</span><button class="btn sm" onclick="gotoById('pipe')">상세 보기</button></div>
+      <div class="grid g4">
+        <div class="card"><div class="card-lbl">진행 중</div><div class="card-val warn">2</div></div>
+        <div class="card"><div class="card-lbl">대기 중</div><div class="card-val">7</div></div>
+        <div class="card"><div class="card-lbl">오늘 완료</div><div class="card-val green">42</div></div>
+        <div class="card"><div class="card-lbl">실패</div><div class="card-val red">3</div></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY FEED -->
+    <div class="sec" style="margin-top:12px">
+      <div class="sec-hd"><span class="sec-title">최근 활동</span><button class="btn sm">전체 로그</button></div>
+      <div id="activityFeed"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════ DATA ═══════════════════ -->
+<div class="page" id="p-data">
+  <div class="topbar">
+    <div><div class="topbar-title">데이터 소스 관리</div><div class="topbar-sub">DATA-001 ~ 006 · 총 27개 소스</div></div>
+    <div class="topbar-acts">
+      <button class="btn" onclick="showReindex()">선택 재색인</button>
+      <button class="btn red sm" onclick="showDeleteModal()">선택 삭제</button>
+      <button class="btn gold" onclick="showUploadModal()">파일 업로드</button>
+    </div>
+  </div>
+  <div class="fstrip">
+    <input class="finput" style="width:180px;height:22px;font-size:11px" placeholder="파일명 검색…" oninput="filterData(this.value)">
+    <span class="fsep">|</span>
+    <button class="fchip on" onclick="setDFilter(this,'all')">전체</button>
+    <button class="fchip" onclick="setDFilter(this,'pdf')">PDF</button>
+    <button class="fchip" onclick="setDFilter(this,'xlsx')">XLSX</button>
+    <button class="fchip" onclick="setDFilter(this,'csv')">CSV</button>
+    <button class="fchip" onclick="setDFilter(this,'image')">이미지</button>
+    <button class="fchip" onclick="setDFilter(this,'video')">영상</button>
+    <span class="fsep">|</span>
+    <button class="fchip" onclick="setDFilter(this,'done')">완료</button>
+    <button class="fchip" onclick="setDFilter(this,'fail')">실패</button>
+    <button class="fchip" onclick="setDFilter(this,'proc')">처리 중</button>
+  </div>
+  <div style="flex:1;overflow-y:auto">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:28px"><input type="checkbox" id="chkAll" onchange="toggleAll(this)"></th>
+          <th>파일명</th><th>유형</th><th>크기</th><th>카테고리</th><th>청크</th><th>임베딩 차원</th><th>그래프 노드</th><th>색인 상태</th><th>업로드</th><th>업로드자</th><th>작업</th>
+        </tr></thead>
+        <tbody id="dataTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PIPELINE ═══════════════════ -->
+<div class="page" id="p-pipe">
+  <div class="topbar">
+    <div><div class="topbar-title">인덱싱 파이프라인 관리</div><div class="topbar-sub">PIPE-001 ~ 004 · Celery 기반 비동기 처리</div></div>
+    <div class="topbar-acts"><button class="btn gold" onclick="startAllPipe()">전체 파이프라인 실행</button></div>
+  </div>
+  <div class="tabs" id="pipeTabs">
+    <button class="tab on" onclick="setPipeTab(0,this)">파이프라인 현황</button>
+    <button class="tab" onclick="setPipeTab(1,this)">작업 큐</button>
+    <button class="tab" onclick="setPipeTab(2,this)">청킹 설정</button>
+    <button class="tab" onclick="setPipeTab(3,this)">임베딩 설정</button>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="pipeContent"></div>
+</div>
+
+<!-- ═══════════════════ GRAPH ═══════════════════ -->
+<div class="page" id="p-graph">
+  <div class="topbar">
+    <div><div class="topbar-title">지식 그래프 관리</div><div class="topbar-sub">GRAPH-001 ~ 003 · Neo4j 기반 · 노드 4,821개 · 관계 11,304개</div></div>
+    <div class="topbar-acts">
+      <button class="btn" onclick="showGraphSearch()">노드 검색</button>
+      <button class="btn gold" onclick="showAddNode()">노드 추가</button>
+    </div>
+  </div>
+  <div class="tabs" id="graphTabs">
+    <button class="tab on" onclick="setGraphTab(0,this)">그래프 탐색</button>
+    <button class="tab" onclick="setGraphTab(1,this)">노드 · 관계 편집</button>
+    <button class="tab" onclick="setGraphTab(2,this)">개체 추출 설정</button>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="graphContent"></div>
+</div>
+
+<!-- ═══════════════════ SEARCH ═══════════════════ -->
+<div class="page" id="p-search">
+  <div class="topbar">
+    <div><div class="topbar-title">검색 품질 관리</div><div class="topbar-sub">SEARCH-001 ~ 003 · 테스트 플레이그라운드 · 평가 데이터셋</div></div>
+  </div>
+  <div class="tabs" id="searchTabs">
+    <button class="tab on" onclick="setSearchTab(0,this)">테스트 플레이그라운드</button>
+    <button class="tab" onclick="setSearchTab(1,this)">평가 데이터셋</button>
+    <button class="tab" onclick="setSearchTab(2,this)">검색 파라미터</button>
+  </div>
+  <div style="flex:1;overflow:hidden;display:flex;flex-direction:column" id="searchContent"></div>
+</div>
+
+<!-- ═══════════════════ MONITORING ═══════════════════ -->
+<div class="page" id="p-mon">
+  <div class="topbar">
+    <div><div class="topbar-title">모니터링 & 로그</div><div class="topbar-sub">MON-001 ~ 003 · 실시간 성능 지표</div></div>
+    <div class="topbar-acts"><button class="btn gold">CSV 내보내기</button></div>
+  </div>
+  <div class="fstrip">
+    <button class="fchip on" onclick="setMonFilter(this)">오늘</button>
+    <button class="fchip" onclick="setMonFilter(this)">7일</button>
+    <button class="fchip" onclick="setMonFilter(this)">30일</button>
+    <button class="fchip" onclick="setMonFilter(this)">커스텀</button>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="monContent"></div>
+</div>
+
+<!-- ═══════════════════ USERS ═══════════════════ -->
+<div class="page" id="p-users">
+  <div class="topbar">
+    <div><div class="topbar-title">사용자 & 권한 관리</div><div class="topbar-sub">USER-001 ~ 002 · RBAC · 감사 로그</div></div>
+    <div class="topbar-acts"><button class="btn gold" onclick="showAddUser()">사용자 추가</button></div>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="usersContent"></div>
+</div>
+
+<!-- ═══════════════════ SYSTEM SETTINGS ═══════════════════ -->
+<div class="page" id="p-sysset">
+  <div class="topbar">
+    <div><div class="topbar-title">시스템 설정</div><div class="topbar-sub">SYS-001 ~ 002 · LLM · 임베딩 · 알림</div></div>
+    <div class="topbar-acts"><button class="btn gold" onclick="saveSysSet()">설정 저장</button></div>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="syssetContent"></div>
+</div>
+
+<!-- ═══════════════════ CONSULT ═══════════════════ -->
+<div class="page" id="p-consult">
+  <div class="topbar">
+    <div><div class="topbar-title">상담 이력 & 프롬프트 관리</div><div class="topbar-sub">대화 로그 · 요약 검수 · 프롬프트 버전 · 파인튜닝 데이터셋</div></div>
+    <div class="topbar-acts"><button class="btn gold" onclick="exportFinetuneData()">데이터셋 내보내기</button></div>
+  </div>
+  <div class="tabs" id="consultTabs">
+    <button class="tab on"  onclick="setConsultTab(0,this)">대화 로그</button>
+    <button class="tab"     onclick="setConsultTab(1,this)">요약본 검수</button>
+    <button class="tab"     onclick="setConsultTab(2,this)">프롬프트 버전</button>
+    <button class="tab"     onclick="setConsultTab(3,this)">파인튜닝 데이터셋</button>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="consultContent"></div>
+</div>
+
+<!-- ═══════════════════ NLP ═══════════════════ -->
+<div class="page" id="p-nlp">
+  <div class="topbar">
+    <div><div class="topbar-title">NLP 가드레일 · 언어 규칙 관리</div><div class="topbar-sub">실시간 환경 변수 Injection — 저장 즉시 파이프라인 반영</div></div>
+    <div class="topbar-acts">
+      <span id="nlp-inject-status" style="font-size:11px;color:var(--t3);margin-right:8px"></span>
+      <button class="btn gold" onclick="injectNLPRules()">규칙 즉시 반영 (Inject)</button>
+    </div>
+  </div>
+  <div class="tabs" id="nlpTabs">
+    <button class="tab on" onclick="setNlpTab(0,this)">금칙어 · 블랙리스트</button>
+    <button class="tab"    onclick="setNlpTab(1,this)">유사어 · 동의어 사전</button>
+    <button class="tab"    onclick="setNlpTab(2,this)">불용어 사전</button>
+    <button class="tab"    onclick="setNlpTab(3,this)">할루시네이션 가드레일</button>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="nlpContent"></div>
+</div>
+
+<!-- ═══════════════════ WORKFLOW ═══════════════════ -->
+<div class="page" id="p-workflow">
+  <div class="topbar">
+    <div><div class="topbar-title">워크플로우 · 모델 파라미터</div><div class="topbar-sub">LLM 하이퍼파라미터 · RAG · 라우팅 분기 — 저장 즉시 파이프라인 Injection</div></div>
+    <div class="topbar-acts">
+      <span id="wf-inject-status" style="font-size:11px;color:var(--t3);margin-right:8px"></span>
+      <button class="btn gold" onclick="injectWorkflow()">설정 즉시 반영 (Inject)</button>
+    </div>
+  </div>
+  <div class="tabs" id="workflowTabs">
+    <button class="tab on" onclick="setWorkflowTab(0,this)">LLM 하이퍼파라미터</button>
+    <button class="tab"    onclick="setWorkflowTab(1,this)">RAG · Vector DB</button>
+    <button class="tab"    onclick="setWorkflowTab(2,this)">라우팅 · 분기 규칙</button>
+  </div>
+  <div style="flex:1;overflow-y:auto" id="workflowContent"></div>
+</div>
+
+</main>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+<div class="modal-bg" id="uploadModal">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">파일 업로드 — DATA-002</span><button class="modal-close" onclick="closeModal('uploadModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="drop-zone" id="dropZ" onclick="document.getElementById('fileInput').click()"
+        ondragover="event.preventDefault();this.classList.add('drag')"
+        ondragleave="this.classList.remove('drag')"
+        ondrop="handleDrop(event)">
+        <div class="drop-ico">↑</div>
+        <div class="drop-txt">드래그&드롭 또는 클릭하여 파일 선택</div>
+        <div class="drop-sub">PDF · DOCX · CSV · XLSX · PNG · JPG · MP4 · 단일 500MB · 배치 2GB</div>
+      </div>
+      <input type="file" id="fileInput" multiple style="display:none" onchange="handleFileInput(this)">
+      <div id="uploadFileList" style="margin-top:10px"></div>
+      <div class="frow" style="margin-top:10px">
+        <div class="fcell"><div class="flbl">문서 카테고리</div>
+          <select class="fselect"><option>제품 정보</option><option>정책/약관</option><option>매장 정보</option><option>마케팅</option><option>기타</option></select>
+        </div>
+        <div class="fcell"><div class="flbl">태그</div><input class="finput" placeholder="쉼표로 구분, 예: VIP, 2026"></div>
+      </div>
+      <div class="frow">
+        <div class="fcell"><div class="flbl">유효 기간</div><input class="finput" type="date" value="2027-12-31"></div>
+        <div class="fcell" style="display:flex;align-items:center;padding-top:24px">
+          <label class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span class="toggle-lbl">업로드 후 즉시 색인 시작</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn" onclick="closeModal('uploadModal')">취소</button>
+      <button class="btn gold" onclick="doUpload()">업로드 시작</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="deleteModal">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">데이터 소스 삭제 — DATA-005</span><button class="modal-close" onclick="closeModal('deleteModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert red" style="margin-bottom:12px">삭제 영향 범위: 청크 486개 · 그래프 노드 124개 · 임베딩 벡터 486개</div>
+      <p style="font-size:12px;color:var(--t2);margin-bottom:12px">삭제된 데이터는 30일간 소프트 삭제 후 영구 제거됩니다. 계속하려면 파일명을 입력하세요.</p>
+      <input class="finput" id="deleteConfirmInput" placeholder="파일명을 정확히 입력하세요" style="margin-bottom:4px">
+    </div>
+    <div class="modal-ft">
+      <button class="btn" onclick="closeModal('deleteModal')">취소</button>
+      <button class="btn red" onclick="doDelete()">삭제 확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="addUserModal">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">사용자 추가 — USER-001</span><button class="modal-close" onclick="closeModal('addUserModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="fcell"><div class="flbl">이름</div><input class="finput" placeholder="홍길동"></div><div class="fcell"><div class="flbl">이메일</div><input class="finput" placeholder="user@company.com" type="email"></div></div>
+      <div class="frow"><div class="fcell"><div class="flbl">역할 (RBAC)</div><select class="fselect"><option>SUPER_ADMIN</option><option selected>DATA_ADMIN</option><option>OPS_ADMIN</option><option>VIEWER</option></select></div><div class="fcell" style="padding-top:22px"><p style="font-size:11px;color:var(--t3)">계정 생성 시 이메일로 임시 비밀번호가 발송됩니다.</p></div></div>
+    </div>
+    <div class="modal-ft"><button class="btn" onclick="closeModal('addUserModal')">취소</button><button class="btn gold" onclick="doAddUser()">계정 생성</button></div>
+  </div>
+</div>
+
+<script>
+/* ════ DATA ════ */
+const DATA_SOURCES = [
+  {id:'DS-001',nm:'service_handbook_v3.2.pdf',type:'PDF',sz:'2.4 MB',cat:'서비스 소개',chunks:148,dim:1536,nodes:42,status:'done',ts:'05-18 10:12',by:'admin',jobId:'JOB-2830'},
+  {id:'DS-002',nm:'case_studies_2026.xlsx',type:'XLSX',sz:'8.1 MB',cat:'도입 사례',chunks:312,dim:1536,nodes:98,status:'done',ts:'05-18 09:44',by:'data_admin',jobId:'JOB-2829'},
+  {id:'DS-003',nm:'contract_policy_KR.pdf',type:'PDF',sz:'0.8 MB',cat:'정책/약관',chunks:42,dim:1536,nodes:18,status:'done',ts:'05-17 16:30',by:'admin',jobId:'JOB-2828'},
+  {id:'DS-004',nm:'office_contact_info.csv',type:'CSV',sz:'0.2 MB',cat:'오피스 정보',chunks:28,dim:1536,nodes:14,status:'done',ts:'05-17 14:55',by:'data_admin',jobId:'JOB-2827'},
+  {id:'DS-005',nm:'enterprise_service_guide.pdf',type:'PDF',sz:'3.6 MB',cat:'Enterprise 서비스',chunks:0,dim:0,nodes:0,status:'proc',ts:'05-18 14:30',by:'admin',jobId:'JOB-2841'},
+  {id:'DS-006',nm:'company_intro_AW26.mp4',type:'MP4',sz:'124 MB',cat:'마케팅',chunks:0,dim:0,nodes:0,status:'proc',ts:'05-18 14:28',by:'data_admin',jobId:'JOB-2840'},
+  {id:'DS-007',nm:'lookup_broken.csv',type:'CSV',sz:'0.05 MB',cat:'기타',chunks:0,dim:0,nodes:0,status:'fail',ts:'05-18 11:02',by:'ops_admin',jobId:'JOB-2836'},
+  {id:'DS-008',nm:'brand_guidelines_2026.pdf',type:'PDF',sz:'15.2 MB',cat:'마케팅',chunks:284,dim:1536,nodes:76,status:'done',ts:'05-16 09:00',by:'admin',jobId:'JOB-2826'},
+  {id:'DS-009',nm:'sales_faq_inbound.docx',type:'DOCX',sz:'1.1 MB',cat:'서비스 소개',chunks:88,dim:1536,nodes:31,status:'done',ts:'05-15 15:22',by:'data_admin',jobId:'JOB-2825'},
+  {id:'DS-010',nm:'office_photos_may.zip',type:'ZIP',sz:'320 MB',cat:'오피스 정보',chunks:0,dim:0,nodes:0,status:'fail',ts:'05-14 08:44',by:'admin',jobId:'JOB-2835'},
+];
+
+const JOBS = [
+  {id:'JOB-2841',nm:'enterprise_service_guide.pdf',dsId:'DS-005',stage:'임베딩',status:'running',started:'14:28',elapsed:'8m 22s',err:''},
+  {id:'JOB-2840',nm:'company_intro_AW26.mp4',dsId:'DS-006',stage:'전처리(ASR)',status:'running',started:'14:26',elapsed:'10m 14s',err:''},
+  {id:'JOB-2839',nm:'case_studies_supplement.xlsx',dsId:null,stage:'대기',status:'wait',started:'—',elapsed:'—',err:''},
+  {id:'JOB-2838',nm:'policy_update_v2.pdf',dsId:null,stage:'대기',status:'wait',started:'—',elapsed:'—',err:''},
+  {id:'JOB-2837',nm:'office_directory_2026.csv',dsId:null,stage:'대기',status:'wait',started:'—',elapsed:'—',err:''},
+  {id:'JOB-2836',nm:'lookup_broken.csv',dsId:'DS-007',stage:'전처리',status:'fail',started:'11:02',elapsed:'0m 04s',err:'UnicodeDecodeError: 파일 인코딩 불일치 (EUC-KR → UTF-8 필요)'},
+  {id:'JOB-2835',nm:'office_photos_may.zip',dsId:'DS-010',stage:'수집',status:'fail',started:'08:44',elapsed:'0m 01s',err:'지원하지 않는 파일 형식 (.zip)'},
+];
+
+const USERS = [
+  {nm:'김지영',email:'jy.kim@rag.internal',role:'SUPER_ADMIN',last:'2026-05-18 14:21',status:'active'},
+  {nm:'박상훈',email:'sh.park@rag.internal',role:'DATA_ADMIN',last:'2026-05-18 09:45',status:'active'},
+  {nm:'이수연',email:'sy.lee@rag.internal',role:'OPS_ADMIN',last:'2026-05-17 17:03',status:'active'},
+  {nm:'최민준',email:'mj.choi@rag.internal',role:'VIEWER',last:'2026-05-14 11:22',status:'inactive'},
+];
+
+const QUERY_LOG = [
+  {ts:'14:38:02',uid:'agent_01',q:'AEM 도입 사례 문의',mode:'하이브리드',rt:'820ms',ok:true,chunks:4,sessionId:'S-2847'},
+  {ts:'14:36:55',uid:'agent_02',q:'Enterprise 전담 PM 연결 방법',mode:'그래프',rt:'1,240ms',ok:true,chunks:6,sessionId:'S-2846'},
+  {ts:'14:35:11',uid:'agent_01',q:'PoC 보완 옵션 검토',mode:'하이브리드',rt:'740ms',ok:true,chunks:3,sessionId:'S-2844'},
+  {ts:'14:33:40',uid:'agent_03',q:'2026 AW 신규 서비스 출시 일정',mode:'벡터',rt:'1,890ms',ok:false,chunks:0,sessionId:null},
+  {ts:'14:31:22',uid:'agent_02',q:'마포 본사 운영 시간',mode:'BM25',rt:'620ms',ok:true,chunks:2,sessionId:'S-2843'},
+  {ts:'14:29:07',uid:'agent_01',q:'Salesforce 도입 견적 기준',mode:'하이브리드',rt:'780ms',ok:true,chunks:4,sessionId:'S-2845'},
+];
+
+const SYS_LOGS = [
+  {ts:'14:38:10',cmp:'파이프라인',msg:'JOB-2841 임베딩 완료 (진행률 78%)',lv:'info'},
+  {ts:'14:35:03',cmp:'검색',msg:'쿼리 낮은 관련도 감지 — "2026 AW 신규 서비스 출시 일정" (score 0.38)',lv:'warn'},
+  {ts:'14:30:21',cmp:'인증',msg:'사용자 sh.park 로그인 성공 (IP: 10.0.1.42)',lv:'info'},
+  {ts:'14:20:14',cmp:'파이프라인',msg:'JOB-2836 실패 — UnicodeDecodeError',lv:'error'},
+  {ts:'14:11:02',cmp:'데이터',msg:'DS-010 업로드 실패 — 지원 불가 형식 (.zip)',lv:'error'},
+  {ts:'09:44:18',cmp:'파이프라인',msg:'DS-002 색인 완료 (312 청크, 1,536차원)',lv:'info'},
+  {ts:'09:01:00',cmp:'시스템',msg:'일일 성능 스냅샷 저장 완료',lv:'info'},
+];
+
+const ACTIVITY = [
+  {ico:'↑',col:'var(--blue)',msg:'case_studies_2026.xlsx 업로드 완료 (312 청크)',ts:'14:30'},
+  {ico:'✓',col:'var(--green)',msg:'JOB-2835 색인 완료 — brand_guidelines_2026.pdf',ts:'14:22'},
+  {ico:'✎',col:'var(--gold)',msg:'김지영 관리자가 청킹 파라미터 변경 (512→768 토큰)',ts:'14:10'},
+  {ico:'✕',col:'var(--red)',msg:'JOB-2836 실패 — lookup_broken.csv 인코딩 오류',ts:'11:02'},
+  {ico:'⇥',col:'var(--warn)',msg:'박상훈 DATA_ADMIN 로그인',ts:'09:45'},
+];
+
+/* ════ STATE ════ */
+let dFilter = 'all', dSearch = '';
+let pipeTab = 0, graphTab = 0, searchTab = 0;
+let srResults = [];
+
+/* ════ INIT ════ */
+window.onload = () => {
+  buildDash();
+  renderDataTable();
+  renderConsultTab(0);
+  renderNlpTab(0);
+  renderWorkflowTab(0);
+  renderPipeTab(0);
+  renderGraphTab(0);
+  renderSearchTab(0);
+  renderMonContent();
+  renderUsers();
+  renderSysSet();
+};
+
+/* ════ NAV ════ */
+/* pageId → GNB ntab index */
+const PAGE_TAB_IDX = {dash:0,consult:1,nlp:2,workflow:3,data:4,pipe:5,search:6,mon:7,users:8,sysset:9};
+
+/* Activate a page without touching sb-item state */
+function activatePage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(b => b.classList.remove('on'));
+  const page = document.getElementById('p-'+id);
+  if (page) page.classList.add('on');
+  const ntabs = document.querySelectorAll('.ntab');
+  const idx = PAGE_TAB_IDX[id];
+  if (ntabs[idx]) ntabs[idx].classList.add('on');
+}
+
+/* Convenience: navigate by page id only (no btn reference needed) */
+function gotoById(id) {
+  activatePage(id);
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  const first = document.querySelector(`.sb-item[data-page="${id}"]`);
+  if (first) first.classList.add('on');
+}
+
+/* GNB tab click — activate page, render tab 0, sync LNB */
+function goto(id, btn) {
+  activatePage(id);
+  document.querySelectorAll('.ntab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  /* activateTab handles tab highlight + renderer + LNB sync */
+  activateTab(id, 0);
+}
+
+/** LNB click → navigate to page + activate correct sub-tab */
+function sb(el, page, subTab) {
+  activatePage(page);
+  /* activateTab renders content, highlights tab button, and syncs LNB */
+  activateTab(page, subTab !== undefined ? subTab : 0);
+  /* Override LNB highlight with the exact element clicked
+     (activateTab picks by index, which is correct, but this ensures
+     the clicked element wins if there's any index mismatch) */
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  el.classList.add('on');
+}
+const TAB_RENDERERS = {
+  consult:  (i) => renderConsultTab(i),
+  nlp:      (i) => renderNlpTab(i),
+  workflow: (i) => renderWorkflowTab(i),
+  pipe:     (i) => renderPipeTab(i),
+  graph:    (i) => renderGraphTab(i),
+  search:   (i) => renderSearchTab(i),
+};
+
+/**
+ * activateTab(page, tabIndex)
+ * Switches the visible tab inside a page AND keeps the LNB in sync.
+ * Called by both LNB sb() and the in-page tab buttons.
+ */
+function activateTab(page, tabIndex) {
+  /* 1. Switch the tab button highlight inside the page */
+  const tabBtns = document.querySelectorAll(`#p-${page} .tabs .tab`);
+  tabBtns.forEach(t => t.classList.remove('on'));
+  if (tabBtns[tabIndex]) tabBtns[tabIndex].classList.add('on');
+
+  /* 2. Render the tab content */
+  if (TAB_RENDERERS[page]) TAB_RENDERERS[page](tabIndex);
+
+  /* 3. Sync LNB: highlight the sb-item whose data-page matches and
+        whose position inside its group matches tabIndex */
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  const groupItems = document.querySelectorAll(`.sb-item[data-page="${page}"]`);
+  const target = groupItems[tabIndex] || groupItems[0];
+  if (target) target.classList.add('on');
+}
+
+/** LNB click → navigate to page + activate correct sub-tab */
+function sb(el, page, subTab) {
+  activatePage(page);
+  activateTab(page, subTab !== undefined ? subTab : 0);
+  /* el is already highlighted by activateTab, but force it in case
+     the index mapping differs (e.g. dash has no tabs) */
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ════ DASHBOARD ════ */
+function buildDash() {
+  const vals = [2840,3100,2660,3420,3180,3550,3472];
+  const max = Math.max(...vals);
+  document.getElementById('sparkDash').innerHTML = vals.map(v =>
+    `<div class="spk" style="height:${Math.round(v/max*100)}%" title="${v.toLocaleString()}건"></div>`
+  ).join('');
+
+  const bars = [
+    ['수집',99,true],['전처리',97,true],['청킹',98,true],['임베딩',95,true],
+    ['인덱스 구축',96,true],['하이브리드 검색',94,true],['답변 생성',94,true],
+  ];
+  document.getElementById('dashBarChart').innerHTML = bars.map(([k,v,ok]) =>
+    `<div class="br"><div class="bk" style="width:90px">${k}</div><div class="btrack"><div class="bfill" style="width:${v}%;background:${ok&&v>=95?'var(--green)':v>=90?'var(--warn)':'var(--red)'}"></div></div><div class="bv">${v}%</div></div>`
+  ).join('');
+
+  document.getElementById('activityFeed').innerHTML = ACTIVITY.map(a =>
+    `<div class="act-item"><div class="act-ico" style="background:${a.col}22;color:${a.col}">${a.ico}</div><div class="act-body"><div class="act-msg">${a.msg}</div><div class="act-ts">${a.ts}</div></div></div>`
+  ).join('');
+
+  setTimeout(() => {
+    document.querySelectorAll('.bfill').forEach(el => {
+      const w = el.style.width; el.style.width='0%';
+      setTimeout(() => el.style.width = w, 50);
+    });
+  }, 100);
+}
+
+function refreshDash() {
+  const ts = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('dash-ts').textContent = ts;
+}
+
+/* ════ DATA TABLE ════ */
+function renderDataTable() {
+  const statusMap = {done:['green','완료'],proc:['warn','처리 중'],fail:['red','실패'],wait:['gray','대기']};
+  const filtered = DATA_SOURCES.filter(d => {
+    const ms = dSearch ? d.nm.toLowerCase().includes(dSearch.toLowerCase()) : true;
+    const mf = dFilter === 'all' ? true :
+      dFilter==='pdf'?d.type==='PDF':dFilter==='xlsx'?d.type==='XLSX':
+      dFilter==='csv'?d.type==='CSV':dFilter==='image'?['PNG','JPG'].includes(d.type):
+      dFilter==='video'?d.type==='MP4':dFilter==='done'?d.status==='done':
+      dFilter==='fail'?d.status==='fail':dFilter==='proc'?d.status==='proc':true;
+    return ms && mf;
+  });
+  document.getElementById('dataTbody').innerHTML = filtered.map(d => {
+    const [sc,sl] = statusMap[d.status]||['gray','—'];
+    const job = JOBS.find(j => j.id === d.jobId);
+    const jobBadge = job
+      ? `<span class="sid-link" style="margin-left:6px;font-size:10px"
+           onclick="jumpToJob('${job.id}')" title="작업 큐에서 보기">
+           ${job.id} <span class="tag ${job.status==='running'?'warn':job.status==='fail'?'red':job.status==='done'?'green':'gray'}"
+           style="font-size:9px">${job.status==='running'?'진행중':job.status==='fail'?'실패':job.status==='done'?'완료':'대기'}</span>
+         </span>`
+      : `<span style="font-size:10px;color:var(--t4)">—</span>`;
+    const progress = d.status==='proc'
+      ? `<div class="prog" style="margin-top:4px;width:60px"><div class="prog-f" style="width:${job?48:30}%;background:var(--warn)"></div></div>`
+      : '';
+    return `<tr>
+      <td><input type="checkbox" class="row-chk" data-id="${d.id}"></td>
+      <td class="w" style="font-size:12px">${d.nm}</td>
+      <td><span class="tag gray">${d.type}</span></td>
+      <td>${d.sz}</td>
+      <td style="color:var(--t3)">${d.cat}</td>
+      <td>${d.chunks||'—'}</td>
+      <td>${d.dim||'—'}</td>
+      <td>${d.nodes||'—'}</td>
+      <td>
+        <span class="tag ${sc}">${sl}</span>${progress}
+        ${jobBadge}
+      </td>
+      <td style="color:var(--t3);font-size:11px">${d.ts}</td>
+      <td style="color:var(--t3)">${d.by}</td>
+      <td style="white-space:nowrap">
+        <button class="btn sm" onclick="viewDetail('${d.id}')">상세</button>
+        ${d.status==='fail'?`<button class="btn sm green" style="margin-left:3px" onclick="reindexOne('${d.id}')">재색인</button>`:''}
+        <button class="btn sm red" style="margin-left:3px" onclick="showDeleteModal('${d.id}')">삭제</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterData(v) { dSearch = v; renderDataTable(); }
+function setDFilter(btn, v) {
+  dFilter = v;
+  btn.closest('.fstrip').querySelectorAll('.fchip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDataTable();
+}
+function toggleAll(chk) { document.querySelectorAll('.row-chk').forEach(c => c.checked = chk.checked); }
+function viewDetail(id) { alert(`[상세 조회]\n파일 ID: ${id}\n청크 미리보기, 색인 이력 타임라인 표시\n(실제 구현에서 슬라이드 패널로 표시)`); }
+function reindexOne(id) {
+  const d = DATA_SOURCES.find(x=>x.id===id);
+  if(d) { d.status='proc'; renderDataTable(); setTimeout(()=>{ d.status='done'; d.chunks=Math.floor(Math.random()*200+20); d.dim=1536; renderDataTable(); }, 2500); }
+}
+function showReindex() { alert('선택된 파일의 재색인 범위를 선택하세요:\n1) 전체 재색인\n2) 청킹만\n3) 임베딩만\n4) 그래프만'); }
+
+/* ① 데이터 관리 → 작업 큐 포커스 이동 */
+function jumpToJob(jobId) {
+  activatePage('pipe');
+  activateTab('pipe', 1);   /* 작업 큐 탭 */
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#p-pipe table tbody tr');
+    rows.forEach(r => {
+      if (r.textContent.includes(jobId)) {
+        r.style.background = 'rgba(200,169,110,.12)';
+        r.scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => r.style.background = '', 2000);
+      }
+    });
+  }, 120);
+}
+
+/* ① 작업 큐 → 데이터 관리 포커스 이동 */
+function jumpToDS(dsId) {
+  activatePage('data');
+  activateTab('data', 0);
+  dFilter = 'all'; dSearch = '';
+  renderDataTable();
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#dataTbody tr');
+    rows.forEach(r => {
+      if (r.querySelector(`[data-id="${dsId}"]`)) {
+        r.style.background = 'rgba(200,169,110,.12)';
+        r.scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => r.style.background = '', 2000);
+      }
+    });
+  }, 120);
+}
+
+/* ════ PIPELINE ════ */
+function setPipeTab(i, btn) {
+  pipeTab = i;
+  activateTab('pipe', i);
+}
+
+function renderPipeTab(i) {
+  const c = document.getElementById('pipeContent');
+  if(i === 0) {
+    const stages = ['수집','전처리','청킹','임베딩','인덱스 구축','하이브리드 검색','답변 생성'];
+    const stStats = [{done:42,avg:'0.2s',err:0},{done:41,avg:'1.4s',err:1},{done:41,avg:'2.1s',err:0},{done:40,avg:'8.3s',err:1},{done:40,avg:'1.1s',err:0},{done:40,avg:'0.3s',err:0},{done:39,avg:'1.8s',err:1}];
+    const stState = stages.map((_,i) => i===1?'running':i<5?'done':'waiting');
+    const stIco   = {'done':'✓','running':'⟳','waiting':'—'};
+    const stLbl   = {'done':'완료','running':'진행 중','waiting':'대기'};
+    c.innerHTML = `
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:16px;font-weight:600">7단계 파이프라인 — 실시간 현황 (폴링 5s)</div>
+        <div class="pipe-flow">
+          ${stages.map((s,i) => {
+            const st = stState[i];
+            const arrowColor = i < 2 ? 'var(--green)' : i === 2 ? 'var(--gold)' : 'var(--border2)';
+            return `
+            <div class="pf-node">
+              <div class="pf-card ${st}" onclick="showStageDetail(${i})">
+                <div class="pf-ico ${st}">${stIco[st]}</div>
+                <div class="pf-name">${s}</div>
+                <div class="pf-status ${st}">${stLbl[st]}</div>
+                <div class="pf-time">${st!=='waiting'?stStats[i].avg:'—'}</div>
+              </div>
+            </div>
+            ${i<stages.length-1?`
+            <div class="pf-arrow">
+              <svg width="28" height="16" viewBox="0 0 28 16" fill="none">
+                <path d="M2 8 H22 M18 3 L24 8 L18 13" stroke="${arrowColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>`:''}`;
+          }).join('')}
+        </div>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">단계별 통계</div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>단계</th><th>완료</th><th>평균 처리</th><th>오류율</th><th>성공률</th></tr></thead>
+          <tbody>${stages.map((s,i) => `<tr>
+            <td class="w">${s}</td>
+            <td>${stStats[i].done}</td>
+            <td style="font-family:monospace">${stStats[i].avg}</td>
+            <td style="color:${stStats[i].err>0?'var(--warn)':'var(--green)'}">${((stStats[i].err/42)*100).toFixed(1)}%</td>
+            <td><div class="prog" style="width:80px;display:inline-block"><div class="prog-f" style="width:${Math.round((42-stStats[i].err)/42*100)}%;background:var(--green)"></div></div></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`;
+  } else if(i === 1) {
+    const stMap = {running:['warn','진행 중'],wait:['gray','대기'],fail:['red','실패'],done:['green','완료']};
+    c.innerHTML = `
+      <div class="fstrip">
+        <button class="fchip on">전체</button>
+        <button class="fchip">진행 중</button>
+        <button class="fchip">대기</button>
+        <button class="fchip">실패</button>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>작업 ID</th><th>대상 파일</th><th>데이터 소스</th><th>단계</th><th>상태</th><th>시작</th><th>소요</th><th>작업</th></tr></thead>
+        <tbody>${JOBS.map(j => {
+          const [sc,sl]=stMap[j.status]||['gray','—'];
+          const ds = j.dsId ? DATA_SOURCES.find(d=>d.id===j.dsId) : null;
+          const dsLink = ds
+            ? `<span class="sid-link" onclick="jumpToDS('${ds.id}')" title="데이터 관리에서 보기">${ds.id}</span>`
+            : `<span style="color:var(--t4);font-size:11px">—</span>`;
+          return `<tr>
+            <td style="font-family:monospace;font-size:11px;color:var(--t3)">${j.id}</td>
+            <td class="w">${j.nm}${j.err?`<div style="font-size:10px;color:var(--red);margin-top:2px">${j.err}</div>`:''}</td>
+            <td>${dsLink}</td>
+            <td style="color:var(--t3)">${j.stage}</td>
+            <td><span class="tag ${sc}">${sl}</span></td>
+            <td style="font-family:monospace;font-size:11px">${j.started}</td>
+            <td style="font-family:monospace;font-size:11px">${j.elapsed}</td>
+            <td style="white-space:nowrap">
+              ${j.status==='running'?'<button class="btn sm">일시정지</button>':''}
+              ${j.status==='wait'?'<button class="btn sm">취소</button>':''}
+              ${j.status==='fail'?`<button class="btn sm green" onclick="retryJob('${j.id}')">재시도</button>`:''}
+            </td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`;
+  } else if(i === 2) {
+    c.innerHTML = `
+      <div class="scroll-content">
+        <div class="sec"><div class="sec-hd"><span class="sec-title">청킹 전략 설정 — PIPE-003</span><button class="btn sm gold" onclick="previewChunking()">테스트 청킹 미리보기</button></div>
+          <div class="frow"><div class="fcell"><div class="flbl">청킹 전략</div>
+            <select class="fselect" id="chunkStrategy" onchange="updateChunkInfo()">
+              <option selected>시맨틱 (기본)</option><option>고정 길이</option><option>문단 단위</option>
+            </select>
+          </div><div class="fcell"><div class="flbl">최대 청크 크기 (토큰)</div>
+            <input type="range" min="128" max="2048" value="512" step="64" id="chunkSize" oninput="document.getElementById('chunkSizeV').textContent=this.value">
+            <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="font-size:11px;color:var(--t3)">128</span><span style="font-size:12px;color:var(--t1)" id="chunkSizeV">512</span><span style="font-size:11px;color:var(--t3)">2048</span></div>
+          </div></div>
+          <div class="frow"><div class="fcell"><div class="flbl">청크 오버랩 (토큰)</div>
+            <input type="range" min="0" max="256" value="50" step="10" id="chunkOverlap" oninput="document.getElementById('chunkOverlapV').textContent=this.value">
+            <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="font-size:11px;color:var(--t3)">0</span><span style="font-size:12px;color:var(--t1)" id="chunkOverlapV">50</span><span style="font-size:11px;color:var(--t3)">256</span></div>
+          </div><div class="fcell" style="padding-top:14px">
+            <label class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span class="toggle-lbl">Small-to-Big Retrieval 활성화</span></label>
+            <div style="margin-top:8px"><div class="flbl">확장 컨텍스트 크기</div><input class="finput" type="number" value="2048"></div>
+          </div></div>
+          <div class="alert info" style="margin:0">설정 변경 시 영향 받는 데이터 소스: <strong style="color:var(--t1)">27개</strong> — 저장 후 재색인 여부를 선택할 수 있습니다.</div>
+        </div>
+      </div>`;
+  } else {
+    c.innerHTML = `
+      <div class="scroll-content">
+        <div class="sec"><div class="sec-hd"><span class="sec-title">임베딩 모델 설정 — PIPE-004</span></div>
+          <div class="frow"><div class="fcell"><div class="flbl">임베딩 모델</div>
+            <select class="fselect" id="embModel" onchange="updateEmbInfo()">
+              <option>Sentence-BERT (로컬)</option><option selected>text-embedding-3-large (OpenAI)</option><option>CLIP (멀티모달)</option>
+            </select>
+          </div><div class="fcell"><div class="flbl">벡터 차원 수</div><input class="finput" value="1536" readonly></div></div>
+          <div class="frow"><div class="fcell"><div class="flbl">API 엔드포인트 URL</div><input class="finput" value="https://api.openai.com/v1/embeddings"></div>
+          <div class="fcell"><div class="flbl">API 키</div>
+            <div style="display:flex;gap:6px"><input class="finput" type="password" value="sk-proj-••••••••••••••••••••" style="flex:1"><button class="btn sm" onclick="testEmb()">연결 테스트</button></div>
+          </div></div>
+          <div class="alert warn" style="margin:0">모델 변경 시 전체 재색인이 필요합니다. 기존 색인 데이터와 호환되지 않습니다.</div>
+        </div>
+      </div>`;
+  }
+}
+
+function showStageDetail(i) { alert(`[${['수집','전처리','청킹','임베딩','인덱스 구축','하이브리드 검색','답변 생성'][i]} 단계 상세]\n처리 건수, 오류 목록, 로그를 표시합니다.`); }
+function retryJob(id) { const j=JOBS.find(x=>x.id===id); if(j){j.status='wait';j.started='—';j.elapsed='—';} activateTab('pipe',1); }
+
+/* ══ 크로스 내비게이션 헬퍼 ══ */
+
+/* ② 모니터링 쿼리 로그 → 슬라이드 패널 */
+function openPanelFromMon(sessionId) {
+  activatePage('consult');
+  activateTab('consult', 0);
+  setTimeout(() => openPanel(sessionId), 120);
+}
+
+/* ② 슬라이드 패널 → 모니터링 쿼리 로그 하이라이트 */
+function jumpToQueryLog(sessionId) {
+  closePanel();
+  activatePage('mon');
+  activateTab('mon', 0);
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#p-mon table tbody tr');
+    rows.forEach(r => {
+      if (r.innerHTML.includes(sessionId)) {
+        r.style.background = 'rgba(200,169,110,.12)';
+        r.scrollIntoView({ behavior:'smooth', block:'center' });
+        setTimeout(() => r.style.background = '', 2000);
+      }
+    });
+  }, 200);
+}
+
+/* ③ 슬라이드 패널 → 프롬프트 버전 이력 하이라이트 */
+function jumpToPromptVer(verId) {
+  closePanel();
+  activatePage('consult');
+  activateTab('consult', 2);
+  setTimeout(() => {
+    const row = document.getElementById('pvr-'+verId);
+    if (row) {
+      row.style.background = 'rgba(200,169,110,.12)';
+      row.scrollIntoView({ behavior:'smooth', block:'center' });
+      setTimeout(() => row.style.background = '', 2000);
+    }
+  }, 120);
+}
+
+/* ③ 프롬프트 버전 → 대화 로그 필터 */
+function filterConsultByPromptVer(verId) {
+  activatePage('consult');
+  activateTab('consult', 0);
+  setTimeout(() => {
+    const tbody = document.getElementById('consultLogTbody');
+    if (!tbody) return;
+    const filtered = CONSULT_LOGS.filter(s => s.promptVer === verId);
+    tbody.innerHTML = renderConsultRows(filtered);
+    const strip = document.querySelector('#p-consult .fstrip');
+    if (strip) {
+      const ex = strip.querySelector('.pv-notice'); if(ex) ex.remove();
+      const n = document.createElement('span');
+      n.className='pv-notice'; n.style.cssText='font-size:11px;color:var(--gold);margin-left:8px';
+      n.innerHTML = `프롬프트 ${verId} 필터 중 (${filtered.length}건) <span style="cursor:pointer;color:var(--t3)" onclick="filterConsultLog('');this.parentElement.remove()">✕</span>`;
+      strip.appendChild(n);
+    }
+  }, 120);
+}
+
+function startAllPipe() { alert('전체 파이프라인을 실행합니다.\n대기 중인 작업 5건이 순차적으로 시작됩니다.'); }
+function previewChunking() { alert('[청킹 미리보기]\n샘플 문서 3건에 현재 설정을 적용한 청크 결과를 표시합니다.'); }
+function testEmb() { alert('[연결 테스트 결과]\n✓ API 엔드포인트 응답 정상 (142ms)\n✓ 임베딩 차원: 1536\n✓ 모델: text-embedding-3-large'); }
+
+/* ════ GRAPH ════ */
+function setGraphTab(i, btn) {
+  graphTab = i;
+  activateTab('graph', i);
+}
+
+function renderGraphTab(i) {
+  const c = document.getElementById('graphContent');
+  if(i === 0) {
+    const nodes = [
+      {id:'faq',lbl:'FAQ 지식베이스',x:340,y:130,r:22,col:'rgba(200,169,110,.15)',sc:'rgba(200,169,110,.5)',tc:'#c8a96e'},
+      {id:'prod',lbl:'제품',x:160,y:60,r:16,col:'rgba(90,159,212,.1)',sc:'rgba(90,159,212,.4)',tc:'#5a9fd4'},
+      {id:'store',lbl:'매장',x:520,y:60,r:16,col:'rgba(90,159,212,.1)',sc:'rgba(90,159,212,.4)',tc:'#5a9fd4'},
+      {id:'policy',lbl:'정책',x:520,y:200,r:16,col:'rgba(192,80,80,.1)',sc:'rgba(192,80,80,.4)',tc:'#c05050'},
+      {id:'vip',lbl:'VIP 서비스',x:160,y:200,r:18,col:'rgba(200,169,110,.1)',sc:'rgba(200,169,110,.3)',tc:'#c8a96e'},
+      {id:'intent',lbl:'인텐트',x:340,y:220,r:13,col:'rgba(77,158,114,.1)',sc:'rgba(77,158,114,.3)',tc:'#4d9e72'},
+      {id:'chunk',lbl:'청크',x:230,y:130,r:12,col:'rgba(255,255,255,.04)',sc:'#252525',tc:'#9b9b9b'},
+      {id:'emb',lbl:'임베딩',x:450,y:130,r:12,col:'rgba(255,255,255,.04)',sc:'#252525',tc:'#9b9b9b'},
+    ];
+    const edges = [['faq','prod'],['faq','store'],['faq','policy'],['faq','vip'],['faq','intent'],['faq','chunk'],['chunk','emb'],['vip','policy'],['intent','faq']];
+    const svgEdges = edges.map(([a,b]) => {
+      const na=nodes.find(n=>n.id===a), nb=nodes.find(n=>n.id===b);
+      return `<line x1="${na.x}" y1="${na.y}" x2="${nb.x}" y2="${nb.y}" stroke="#252525" stroke-width="1"/>`;
+    }).join('');
+    const svgNodes = nodes.map(n =>
+      `<g style="cursor:pointer" onclick="selectNode('${n.id}','${n.lbl}')">
+        <circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="${n.col}" stroke="${n.sc}" stroke-width="1"/>
+        <text x="${n.x}" y="${n.y+4}" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="9" fill="${n.tc}" letter-spacing=".04em">${n.lbl}</text>
+      </g>`
+    ).join('');
+    c.innerHTML = `
+      <div style="display:flex;flex:1;gap:1px;background:var(--border)">
+        <div style="flex:1;display:flex;flex-direction:column;background:var(--bg)">
+          <div class="fstrip">
+            <input class="finput" style="width:160px;height:20px;font-size:11px" placeholder="노드 검색…">
+            <span class="fsep">|</span>
+            <span style="font-size:11px;color:var(--t3)">탐색 깊이:</span>
+            <input type="range" min="1" max="5" value="2" step="1" style="width:80px" oninput="document.getElementById('hopVal').textContent=this.value+'hop'">
+            <span id="hopVal" style="font-size:11px;color:var(--gold)">2hop</span>
+            <span class="fsep">|</span>
+            <span class="tag gold">노드 ${nodes.length}</span>
+            <span class="tag gray">관계 ${edges.length}</span>
+          </div>
+          <div class="graph-canvas">
+            <svg viewBox="0 0 680 280">${svgEdges}${svgNodes}</svg>
+          </div>
+          <div style="padding:8px 12px;border-top:1px solid var(--border);font-size:11px;color:var(--t3)">
+            노드 클릭 시 연결 관계 및 원본 문서 출처를 표시합니다 · 최대 500개 노드 렌더링 지원
+          </div>
+        </div>
+        <div style="width:220px;flex-shrink:0;background:var(--bg1);padding:12px;overflow-y:auto" id="nodeDetail">
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">노드 상세</div>
+          <div style="color:var(--t4);font-size:12px">노드를 클릭하면 상세 정보가 표시됩니다.</div>
+        </div>
+      </div>`;
+  } else if(i === 1) {
+    c.innerHTML = `
+      <div class="scroll-content">
+        <div class="sec"><div class="sec-hd"><span class="sec-title">노드 · 관계 편집 — GRAPH-002</span></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>노드 ID</th><th>레이블</th><th>유형</th><th>관계 수</th><th>원본 소스</th><th>마지막 편집</th><th>작업</th></tr></thead>
+            <tbody>${[
+              ['N-001','AEM 도입 사례','서비스',8,'service_handbook_v3.2.pdf','05-18 admin'],
+              ['N-002','Anchors 마포 본사','오피스',5,'office_contact_info.csv','05-17 data_admin'],
+              ['N-003','계약 중단 정책','정책',6,'contract_policy_KR.pdf','05-18 admin'],
+              ['N-004','Enterprise 등급','고객 등급',4,'enterprise_service_guide.pdf','—'],
+              ['N-005','Salesforce 패키지','서비스',7,'case_studies_2026.xlsx','05-16 admin'],
+            ].map(([id,lbl,type,rels,src,ed]) => `<tr>
+              <td style="font-family:monospace;font-size:11px;color:var(--t3)">${id}</td>
+              <td class="w">${lbl}</td><td><span class="tag blue">${type}</span></td>
+              <td>${rels}</td><td style="color:var(--t3);font-size:11px">${src}</td>
+              <td style="color:var(--t4);font-size:11px">${ed}</td>
+              <td><button class="btn sm">편집</button><button class="btn sm red" style="margin-left:3px">삭제</button></td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </div>
+        <div class="alert info" style="margin-top:1px">편집 이력(변경자·변경일시·이전값)이 자동으로 기록되며 롤백이 가능합니다.</div>
+      </div>`;
+  } else {
+    c.innerHTML = `
+      <div class="scroll-content">
+        <div class="sec"><div class="sec-hd"><span class="sec-title">개체 추출 설정 — GRAPH-003</span><button class="btn sm gold" onclick="applyExtract()">기존 파일 일괄 재적용</button></div>
+          <div class="frow"><div class="fcell" style="flex:2"><div class="flbl">추출 대상 개체 유형</div>
+            <textarea class="finput" rows="3">서비스명, 기능명, 오피스명, 정책명, 고객 등급, 담당자명, 도입 사례명</textarea>
+          </div><div class="fcell"><div class="flbl">추출 신뢰도 임계치</div>
+            <input type="range" min="0" max="1" value="0.7" step="0.05" oninput="document.getElementById('confV').textContent=parseFloat(this.value).toFixed(2)">
+            <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="font-size:11px;color:var(--t3)">0.0</span><span style="font-size:12px;color:var(--t1)" id="confV">0.70</span><span style="font-size:11px;color:var(--t3)">1.0</span></div>
+          </div></div>
+          <div class="frow"><div class="fcell" style="flex:2"><div class="flbl">추출 대상 관계 유형</div>
+            <textarea class="finput" rows="3">포함한다, 적용된다, 의존한다, 소속이다, 제공한다, 대체한다</textarea>
+          </div><div class="fcell"><div class="flbl">LLM 프롬프트 모드</div>
+            <select class="fselect"><option selected>기본 추출</option><option>도메인 특화</option><option>최소 추출</option></select>
+          </div></div>
+        </div>
+      </div>`;
+  }
+}
+
+function selectNode(id, lbl) {
+  document.getElementById('nodeDetail').innerHTML = `
+    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">노드 상세</div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:14px;color:var(--t1);margin-bottom:2px">${lbl}</div>
+      <span class="tag gold">Entity</span>
+    </div>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:8px">ID: N-00X</div>
+    <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);margin-bottom:5px">연결 관계</div>
+    ${['→ 포함한다 → 서비스','← 적용된다 ← 정책','→ 제공한다 → Enterprise 서비스'].map(r=>`<div style="font-size:11px;color:var(--t3);padding:3px 0;border-bottom:1px solid var(--border)">${r}</div>`).join('')}
+    <div style="margin-top:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);margin-bottom:5px">원본 출처</div>
+    <div style="font-size:11px;color:var(--t3)">service_handbook_v3.2.pdf · p.14</div>`;
+}
+function showGraphSearch() { alert('노드 검색: 노드명 또는 속성으로 검색 후 해당 노드로 포커스 이동'); }
+function showAddNode() { alert('노드 추가: 레이블, 유형, 속성값을 입력하여 수동으로 노드를 추가합니다.'); }
+function applyExtract() { alert('기존 파일 27개에 새 추출 설정을 일괄 재적용합니다.\n예상 소요 시간: 약 15분'); }
+
+/* ════ SEARCH ════ */
+function setSearchTab(i, btn) {
+  searchTab = i;
+  activateTab('search', i);
+}
+
+function renderSearchTab(i) {
+  const c = document.getElementById('searchContent');
+  if(i === 0) {
+    c.innerHTML = `
+      <div class="playground">
+        <div class="pg-left">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--border);background:var(--bg1);display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            <input class="finput" id="srQuery" style="flex:1;min-width:200px" placeholder="자연어로 질문을 입력하세요… (예: AEM 도입 사례 알려주세요)" onkeydown="if(event.key==='Enter')runSearch()">
+            <select class="fselect" id="srMode" style="width:110px">
+              <option>하이브리드</option><option>벡터</option><option>BM25</option><option>그래프</option>
+            </select>
+            <button class="btn gold" onclick="runSearch()">검색 실행</button>
+          </div>
+          <div id="srTimings" style="display:none;padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;gap:12px;font-size:11px;flex-shrink:0"></div>
+          <div class="pg-result" id="srResults">
+            <div style="color:var(--t4);font-size:12px;padding:20px 0;text-align:center">질문을 입력하고 검색을 실행하세요.</div>
+          </div>
+        </div>
+        <div class="pg-right">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--border)"><div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3)">검색 결과 분석</div></div>
+          <div style="padding:12px" id="srInspect">
+            <div style="color:var(--t4);font-size:11px">검색 실행 후 결과가 표시됩니다.</div>
+          </div>
+        </div>
+      </div>`;
+  } else if(i === 1) {
+    c.innerHTML = `
+      <div style="flex:1;overflow-y:auto">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg1);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--t2)">평가 데이터셋 — SEARCH-002</div>
+          <div style="display:flex;gap:5px"><button class="btn sm" onclick="importDataset()">CSV 업로드</button><button class="btn sm gold" onclick="runEval()">평가 실행</button></div>
+        </div>
+        <div id="evalResult" style="display:none;padding:12px 14px;background:var(--bg2);border-bottom:1px solid var(--border)">
+          <div class="grid g3">
+            <div class="card"><div class="card-lbl">검색 성공률</div><div class="card-val green">94.2%</div></div>
+            <div class="card"><div class="card-lbl">MRR</div><div class="card-val gold">0.847</div></div>
+            <div class="card"><div class="card-lbl">NDCG@10</div><div class="card-val gold">0.812</div></div>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>ID</th><th>질문</th><th>정답(Golden Answer)</th><th>카테고리</th><th>마지막 평가</th><th>성공</th><th>작업</th></tr></thead>
+          <tbody>${[
+            ['QA-001','AEM 도입 사례가 궁금합니다','Anchors는 삼성·현대·대한항공 등 대기업 대상 AEM 프로젝트 다수 수행. 상세는 NDA 협의 후 제공','도입 사례',true],
+            ['QA-002','계약 중단 정책이 어떻게 되나요?','PoC 종료 후 본 계약 미체결 시까지 추가 비용 없이 중단 가능. 본 계약 후엔 단계별 정산 적용','계약 정책',true],
+            ['QA-003','Enterprise 서비스 혜택은?','전담 PM 배정, SLA 기반 우선 응대, 핫라인 직통 연결, 전용 자원 풀','Enterprise 서비스',true],
+            ['QA-004','2026 AW 신규 서비스 출시일?','현재 데이터베이스에 정보 없음','신규 서비스',false],
+          ].map(([id,q,ans,cat,ok]) => `<tr>
+            <td style="font-family:monospace;font-size:11px;color:var(--t3)">${id}</td>
+            <td class="w">${q}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${ans}</td>
+            <td><span class="tag gray">${cat}</span></td>
+            <td style="color:var(--t3);font-size:11px">05-18 14:00</td>
+            <td><span class="tag ${ok?'green':'red'}">${ok?'성공':'실패'}</span></td>
+            <td><button class="btn sm">수정</button></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`;
+  } else {
+    c.innerHTML = `
+      <div style="flex:1;overflow-y:auto;padding:16px">
+        <div class="sec"><div class="sec-hd"><span class="sec-title">하이브리드 검색 파라미터 — SEARCH-003</span><button class="btn sm" onclick="resetSearchParams()">기본값 초기화</button></div>
+          <div style="background:var(--bg1)">
+            ${[
+              ['벡터 검색 Top-K','숫자','10'],
+              ['BM25 가중치','슬라이더','0.4'],
+              ['벡터 가중치','슬라이더','0.6'],
+              ['그래프 탐색 Hop 수','숫자','2'],
+              ['최소 관련도 임계치','슬라이더','0.3'],
+            ].map(([lbl,type,val]) => `
+              <div class="metric-row">
+                <div class="mkey">${lbl}</div>
+                ${type==='숫자'?`<input class="finput" type="number" value="${val}" style="width:80px">`:
+                `<input type="range" min="0" max="1" value="${val}" step="0.05" style="width:120px" oninput="this.nextElementSibling.textContent=parseFloat(this.value).toFixed(2)"><span style="font-size:12px;color:var(--t1);min-width:30px;text-align:center">${val}</span>`}
+              </div>`).join('')}
+            <div class="metric-row">
+              <div class="mkey">Cross-Encoder 재랭킹</div>
+              <label class="toggle-wrap"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span class="toggle-lbl">비활성 (활성화 시 응답 +200ms)</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="alert info" style="margin-top:1px">파라미터 변경 후 테스트 플레이그라운드에서 즉시 검증할 수 있습니다.</div>
+      </div>`;
+  }
+}
+
+function runSearch() {
+  const q = document.getElementById('srQuery')?.value.trim();
+  const mode = document.getElementById('srMode')?.value;
+  if(!q) return;
+  const resEl = document.getElementById('srResults');
+  const timEl = document.getElementById('srTimings');
+  const inspEl = document.getElementById('srInspect');
+  if(!resEl) return;
+  resEl.innerHTML = `<div style="display:flex;align-items:center;gap:8px;padding:16px;color:var(--t3)"><div class="tdots"><div class="td"></div><div class="td"></div><div class="td"></div></div> 검색 중…</div>`;
+  if(timEl) timEl.style.display = 'none';
+  setTimeout(() => {
+    const results = [
+      {score:0.94,src:'service_handbook_v3.2.pdf · p.14',txt:'Anchors는 2018년 설립 이후 삼성, 현대, 대한항공 등 대기업 대상으로 AEM(Adobe Experience Manager) 도입 프로젝트를 다수 수행해 왔습니다. 상세 자료는 NDA 협의 후 제공 가능합니다.'},
+      {score:0.87,src:'office_contact_info.csv · row 12',txt:'Anchors 본사: 서울 마포구 양화로 125, 9-10층. 대표 전화 02-332-9603, 이메일 contact@anchors-biz.com. 운영 시간 평일 10:00 ~ 19:00.'},
+      {score:0.72,src:'case_studies_2026.xlsx · sheet1 row 84',txt:'AEM 도입 영역: 글로벌 멀티사이트, 마케팅 콘텐츠 운영, A/B 테스트, Adobe Marketing Cloud 통합 분석. 평균 구축 기간: 중소규모 3-4개월, 글로벌 6-9개월.'},
+    ];
+    resEl.innerHTML = `
+      <div style="margin-bottom:10px">
+        <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">LLM 생성 답변</div>
+        <div style="background:var(--bg2);border:1px solid var(--border2);padding:10px 12px;font-size:12px;color:var(--t2);line-height:18px">
+          Anchors는 2018년 설립 이후 삼성, 현대, 대한항공 등 대기업 대상으로 AEM 도입 프로젝트를 다수 수행해 왔습니다. 상세 자료는 NDA 협의 후 제공 가능하며, 사전 미팅은 contact@anchors-biz.com 또는 02-332-9603으로 문의 부탁드립니다.
+          <div style="font-size:10px;color:var(--t4);margin-top:6px">인용: service_handbook_v3.2.pdf · office_contact_info.csv</div>
+        </div>
+      </div>
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;font-weight:600">검색 결과 청크 (${results.length}건)</div>
+      ${results.map((r,ri) => {
+        const scoreColor = r.score>=0.9?'var(--green)':r.score>=0.7?'var(--warn)':'var(--red)';
+        const rankClass  = ri===0?'rank-1':ri===1?'rank-2':'rank-3';
+        const fillW      = Math.round(r.score*100);
+        return `<div class="result-card">
+          <div class="result-hd">
+            <div class="result-rank" style="background:${scoreColor};color:#fff">${ri+1}</div>
+            <span class="result-src-text">${r.src}</span>
+            <div class="result-score-wrap">
+              <div class="result-score-bar">
+                <div class="result-score-fill" style="width:${fillW}%;background:${scoreColor}"></div>
+              </div>
+              <span class="result-score-num" style="color:${scoreColor}">${r.score.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="result-body ${rankClass}">${r.txt}</div>
+        </div>`;
+      }).join('')}`;
+    if(timEl) {
+      const timings = {쿼리벡터화:'42ms',검색:'284ms',재랭킹:'—',생성:'512ms',전체:'838ms'};
+      timEl.style.display = 'flex';
+      timEl.innerHTML = Object.entries(timings).map(([k,v]) =>
+        `<span style="color:var(--t3)">${k}: <strong style="color:var(--t1)">${v}</strong></span>`
+      ).join('');
+    }
+    if(inspEl) inspEl.innerHTML = `
+      <div style="margin-bottom:10px"><div class="card-lbl">검색 방식</div><div style="color:var(--t1)">${mode}</div></div>
+      <div style="margin-bottom:10px"><div class="card-lbl">반환 청크</div><div style="color:var(--t1)">3건</div></div>
+      <div style="margin-bottom:10px"><div class="card-lbl">최고 관련도</div><div style="color:var(--green)">0.94</div></div>
+      <div style="margin-bottom:10px"><div class="card-lbl">평균 관련도</div><div style="color:var(--warn)">0.84</div></div>
+      <div><div class="card-lbl">소스 분포</div>${['PDF (2)','CSV (1)'].map(s=>`<span class="chip">${s}</span>`).join('')}</div>`;
+  }, 1200);
+}
+
+function importDataset() { alert('CSV 형식 평가 데이터셋을 업로드합니다.\n형식: question, golden_answer, category'); }
+function runEval() {
+  const el = document.getElementById('evalResult');
+  if(el) { el.style.display='block'; }
+  alert('[평가 실행 완료]\n총 4건 · 성공 3건 · 실패 1건\n검색 성공률: 94.2% · MRR: 0.847 · NDCG@10: 0.812');
+}
+function resetSearchParams() { alert('검색 파라미터를 기본값으로 초기화합니다.'); }
+
+/* ════ MONITORING ════ */
+function renderMonContent() {
+  const c = document.getElementById('monContent');
+  c.innerHTML = `
+    <div style="padding:12px 16px">
+
+      <!-- COST KPI -->
+      <div class="grid g5" style="margin-bottom:1px">
+        <div class="card"><div class="card-lbl">오늘 토큰 입력</div><div class="card-val gold">1.24M</div><div class="card-sub">$0.37</div></div>
+        <div class="card"><div class="card-lbl">오늘 토큰 출력</div><div class="card-val gold">0.38M</div><div class="card-sub">$0.57</div></div>
+        <div class="card"><div class="card-lbl">오늘 총 비용</div><div class="card-val warn">$0.94</div><div class="card-sub">월 예측 $28.2</div></div>
+        <div class="card"><div class="card-lbl">평균 응답 (ms)</div><div class="card-val green">842</div><div class="card-sub">P99: 1,840ms</div></div>
+        <div class="card"><div class="card-lbl">API 실패율</div><div class="card-val red">0.3%</div><div class="card-sub">오늘 10건</div></div>
+      </div>
+
+      <!-- PERF + TOKEN CHART -->
+      <div class="grid g2" style="margin-bottom:1px">
+        <div class="card">
+          <div class="card-lbl" style="margin-bottom:8px">기능별 토큰 소모량 (오늘)</div>
+          <div class="barchart">
+            ${[['챗봇 답변',62],['요약',20],['감정 분석',8],['분류',6],['검색 Re-rank',4]].map(([k,v])=>`
+              <div class="br"><div class="bk" style="width:80px">${k}</div><div class="btrack"><div class="bfill" style="width:${v}%;background:var(--gold)"></div></div><div class="bv">${v}%</div></div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-lbl" style="margin-bottom:8px">핵심 KPI — 목표 기준선</div>
+          ${[['검색 성공률',94.2,90,'var(--green)'],['생성 정확도',96.8,95,'var(--green)'],['색인 성공률',93.5,90,'var(--green)'],['P99 응답 충족',92,95,'var(--warn)']].map(([k,v,goal,col])=>`
+            <div style="margin-bottom:8px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:var(--t2)">${k}</span><span style="font-size:11px;font-family:monospace;color:${col}">${v}%</span></div>
+              <div class="btrack" style="position:relative"><div class="bfill" style="width:${v}%;background:${col}"></div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- TOKEN COST TABLE -->
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sec-hd"><span class="sec-title">일별 토큰 비용 내역 (최근 7일)</span><button class="btn sm gold">CSV 내보내기</button></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>날짜</th><th>입력 토큰</th><th>출력 토큰</th><th>총 토큰</th><th>입력 비용</th><th>출력 비용</th><th>총 비용</th><th>주요 파이프라인</th></tr></thead>
+          <tbody>${[
+            ['05-18','1.24M','0.38M','1.62M','$0.37','$0.57','$0.94','챗봇, 요약'],
+            ['05-17','1.18M','0.35M','1.53M','$0.35','$0.53','$0.88','챗봇, 감정'],
+            ['05-16','0.95M','0.29M','1.24M','$0.29','$0.44','$0.73','요약, 분류'],
+            ['05-15','1.31M','0.41M','1.72M','$0.39','$0.62','$1.01','챗봇, 요약'],
+            ['05-14','1.07M','0.32M','1.39M','$0.32','$0.48','$0.80','챗봇'],
+            ['05-13','0.88M','0.27M','1.15M','$0.26','$0.41','$0.67','요약, 분류'],
+            ['05-12','0.72M','0.22M','0.94M','$0.22','$0.33','$0.55','챗봇'],
+          ].map(([d,i,o,t,ic,oc,tc,pipe])=>`<tr>
+            <td style="color:var(--t3)">${d}</td>
+            <td style="font-family:monospace">${i}</td><td style="font-family:monospace">${o}</td>
+            <td class="w" style="font-family:monospace">${t}</td>
+            <td>${ic}</td><td>${oc}</td>
+            <td style="color:var(--warn)">${tc}</td>
+            <td style="color:var(--t3);font-size:11px">${pipe}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+
+      <!-- QUERY LOG -->
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sec-hd"><span class="sec-title">쿼리 로그 — 응답 지연 · 실패</span>
+          <div style="display:flex;gap:4px">
+            <button class="fchip on" style="height:20px;font-size:10px" onclick="chipOn(this)">전체</button>
+            <button class="fchip" style="height:20px;font-size:10px" onclick="chipOn(this)">실패</button>
+            <button class="fchip" style="height:20px;font-size:10px" onclick="chipOn(this)">지연(>1500ms)</button>
+            <button class="btn sm gold">JSON</button>
+          </div>
+        </div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>시각</th><th>사용자</th><th>질문</th><th>세션</th><th>검색 방식</th><th>응답 시간</th><th>토큰</th><th>결과</th></tr></thead>
+          <tbody>${QUERY_LOG.map(q=>`<tr>
+            <td style="font-family:monospace;font-size:11px;color:var(--t4)">${q.ts}</td>
+            <td style="color:var(--t3)">${q.uid}</td>
+            <td class="w" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${q.q}</td>
+            <td>${q.sessionId
+              ? `<span class="sid-link" onclick="openPanelFromMon('${q.sessionId}')" title="상담 이력에서 보기">▤ ${q.sessionId}</span>`
+              : `<span style="color:var(--t4);font-size:11px">—</span>`}</td>
+            <td><span class="tag gray">${q.mode}</span></td>
+            <td style="font-family:monospace;color:${parseInt(q.rt)>1500?'var(--warn)':'var(--green)'}">${q.rt}</td>
+            <td style="font-family:monospace;color:var(--t3)">${Math.floor(Math.random()*600+200)}</td>
+            <td><span class="tag ${q.ok?'green':'red'}">${q.ok?'성공':'실패'}</span></td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+
+      <!-- SYS LOG -->
+      <div class="sec">
+        <div class="sec-hd">
+          <span class="sec-title">시스템 이벤트 로그</span>
+          <div style="display:flex;gap:4px">
+            <button class="fchip on" style="height:20px;font-size:10px" onclick="filterSysLog(this,'all')">전체</button>
+            <button class="fchip" style="height:20px;font-size:10px" onclick="filterSysLog(this,'warn')">WARN</button>
+            <button class="fchip" style="height:20px;font-size:10px" onclick="filterSysLog(this,'error')">ERROR</button>
+          </div>
+        </div>
+        <div class="loglist" id="sysLogList">${renderSysLog(null)}</div>
+      </div>
+
+    </div>`;
+}
+
+function renderSysLog(filter) {
+  const logs = filter ? SYS_LOGS.filter(l=>l.lv===filter) : SYS_LOGS;
+  return logs.map(l => {
+    /* linkify JOB-XXXX and DS-XXX tokens */
+    const linked = l.msg
+      .replace(/(JOB-\d+)/g, `<span class="sid-link" onclick="jumpToJob('$1')" title="작업 큐에서 보기">$1</span>`)
+      .replace(/(DS-\d+)/g,  `<span class="sid-link" onclick="jumpToDS('$1')" title="데이터 관리에서 보기">$1</span>`);
+    return `<div class="logrow">
+      <span class="log-ts">${l.ts}</span>
+      <span class="log-cmp">${l.cmp}</span>
+      <span class="log-msg">${linked}</span>
+      <span class="log-lv"><span class="tag ${l.lv==='error'?'red':l.lv==='warn'?'warn':'gray'}">${l.lv.toUpperCase()}</span></span>
+    </div>`;
+  }).join('');
+}
+
+function filterSysLog(btn, type) {
+  btn.parentElement.querySelectorAll('.fchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const el = document.getElementById('sysLogList');
+  if(el) el.innerHTML = renderSysLog(type==='all'?null:type);
+}
+function setMonFilter(btn) {
+  document.querySelector('.fstrip').querySelectorAll('.fchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+/* ════ USERS ════ */
+function renderUsers() {
+  const rbacMap = {SUPER_ADMIN:'gold',DATA_ADMIN:'blue',OPS_ADMIN:'warn',VIEWER:'gray'};
+  document.getElementById('usersContent').innerHTML = `
+    <div style="flex:1;overflow-y:auto;padding:16px">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-title">사용자 계정 — USER-001</span></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>이름</th><th>이메일</th><th>역할</th><th>마지막 로그인</th><th>상태</th><th>작업</th></tr></thead>
+          <tbody>${USERS.map(u => `<tr>
+            <td class="w">${u.nm}</td>
+            <td>${u.email}</td>
+            <td><span class="tag ${rbacMap[u.role]||'gray'}">${u.role}</span></td>
+            <td style="font-size:11px;color:var(--t3)">${u.last}</td>
+            <td><span class="tag ${u.status==='active'?'green':'gray'}">${u.status==='active'?'활성':'비활성'}</span></td>
+            <td style="white-space:nowrap">
+              <select class="fselect" style="width:120px;height:22px;font-size:11px" onchange="changeRole(this,'${u.email}')">
+                ${['SUPER_ADMIN','DATA_ADMIN','OPS_ADMIN','VIEWER'].map(r=>`<option ${r===u.role?'selected':''}>${r}</option>`).join('')}
+              </select>
+              <button class="btn sm" style="margin-left:4px" onclick="toggleUser('${u.email}')">${u.status==='active'?'비활성화':'활성화'}</button>
+            </td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+
+      <div class="sec" style="margin-top:12px">
+        <div class="sec-hd"><span class="sec-title">권한 매트릭스 — USER-002</span></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>기능 영역</th><th>SUPER_ADMIN</th><th>DATA_ADMIN</th><th>OPS_ADMIN</th><th>VIEWER</th></tr></thead>
+          <tbody>${[
+            ['홈 대시보드',1,1,1,1],
+            ['데이터 업로드/수정/삭제',1,1,0,0],
+            ['인덱싱 실행',1,1,0,0],
+            ['인덱싱 상태 조회',1,1,1,1],
+            ['지식 그래프 편집',1,1,0,0],
+            ['검색 품질 테스트',1,1,1,0],
+            ['검색 파라미터 설정',1,0,0,0],
+            ['모니터링 대시보드',1,1,1,1],
+            ['시스템 로그',1,0,1,0],
+            ['사용자 관리',1,0,0,0],
+            ['시스템 설정',1,0,0,0],
+          ].map(([feat,...perms]) => `<tr>
+            <td class="w">${feat}</td>
+            ${perms.map(p=>`<td style="text-align:center;color:${p?'var(--green)':'var(--red)'}">${p?'✓':'✗'}</td>`).join('')}
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+
+      <div class="sec" style="margin-top:12px">
+        <div class="sec-hd"><span class="sec-title">감사 로그 — AUTH-003 (최근 10건)</span></div>
+        <div class="loglist">${[
+          ['14:30:01','jy.kim','10.0.1.10','데이터 업로드','DS-002 업로드','성공'],
+          ['14:10:22','jy.kim','10.0.1.10','설정 변경','청킹 파라미터 512→768','성공'],
+          ['09:45:18','sh.park','10.0.1.42','로그인','—','성공'],
+          ['09:01:00','system','내부','자동 작업','일일 스냅샷 저장','성공'],
+        ].map(([ts,uid,ip,act,target,res]) => `<div class="logrow">
+          <span class="log-ts">${ts}</span>
+          <span style="width:80px;flex-shrink:0;font-size:11px;color:var(--t2)">${uid}</span>
+          <span style="width:80px;flex-shrink:0;font-size:11px;color:var(--t4);font-family:monospace">${ip}</span>
+          <span style="width:80px;flex-shrink:0;font-size:11px;color:var(--gold)">${act}</span>
+          <span class="log-msg">${target}</span>
+          <span class="log-lv"><span class="tag green">${res}</span></span>
+        </div>`).join('')}</div>
+      </div>
+    </div>`;
+}
+
+function changeRole(sel, email) {
+  const u = USERS.find(x=>x.email===email);
+  if(u) { u.role = sel.value; renderUsers(); }
+}
+function toggleUser(email) {
+  const u = USERS.find(x=>x.email===email);
+  if(u) { if(u.role==='SUPER_ADMIN'&&u.status==='active'&&USERS.filter(x=>x.role==='SUPER_ADMIN'&&x.status==='active').length<=1){alert('SUPER_ADMIN 계정은 최소 1개 이상 유지해야 합니다.');return;} u.status=u.status==='active'?'inactive':'active'; renderUsers(); }
+}
+
+/* ════ SYSTEM SETTINGS ════ */
+function renderSysSet() {
+  document.getElementById('syssetContent').innerHTML = `
+    <div style="padding:16px">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-title">LLM 모델 설정 — SYS-001</span></div>
+        <div class="frow"><div class="fcell"><div class="flbl">LLM 모델</div>
+          <select class="fselect"><option>GPT-4 (OpenAI)</option><option>GPT-4o</option><option selected>Claude 3.5 Sonnet (Anthropic)</option><option>커스텀 엔드포인트</option></select>
+        </div><div class="fcell"><div class="flbl">API 키</div>
+          <div style="display:flex;gap:6px"><input class="finput" type="password" value="sk-ant-api03-••••••••••••••••" style="flex:1"><button class="btn sm" onclick="testLLM()">연결 테스트</button></div>
+        </div></div>
+        <div class="frow"><div class="fcell"><div class="flbl">최대 토큰 수</div><input class="finput" type="number" value="4096"></div>
+        <div class="fcell"><div class="flbl">Temperature</div>
+          <input type="range" min="0" max="1" value="0.1" step="0.05" oninput="document.getElementById('tempV').textContent=parseFloat(this.value).toFixed(2)">
+          <span style="font-size:12px;color:var(--t1)" id="tempV">0.10</span>
+        </div></div>
+        <div class="alert info" style="margin:0">설정 저장 시 이전 설정이 백업되며 1단계 롤백이 지원됩니다.</div>
+      </div>
+
+      <div class="sec" style="margin-top:12px">
+        <div class="sec-hd"><span class="sec-title">알림 설정 — SYS-002</span><button class="btn sm" onclick="testAlert()">테스트 알림 발송</button></div>
+        <div class="frow"><div class="fcell"><div class="flbl">알림 채널</div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px">
+            <label class="toggle-wrap"><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span class="toggle-lbl">이메일</span></label>
+            <label class="toggle-wrap"><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span class="toggle-lbl">Slack Webhook</span></label>
+          </div>
+        </div><div class="fcell"><div class="flbl">이메일 수신자</div><input class="finput" value="admin@anchors-biz.com" style="margin-bottom:8px"><div class="flbl">Slack Webhook URL</div><input class="finput" placeholder="https://hooks.slack.com/…"></div></div>
+        <div class="frow" style="margin-top:1px">
+          <div class="fcell" style="flex:2">
+            <div class="flbl" style="margin-bottom:8px">알림 이벤트 설정</div>
+            ${[
+              ['색인 실패 발생 시','checked'],
+              ['CRITICAL 오류 발생 시','checked'],
+              ['응답 시간 임계치 초과 시','checked'],
+              ['디스크 사용량 80% 초과 시',''],
+            ].map(([lbl,chk]) => `<div style="margin-bottom:6px"><label class="toggle-wrap"><label class="toggle"><input type="checkbox" ${chk}><div class="toggle-track"></div><div class="toggle-thumb"></div></label><span class="toggle-lbl">${lbl}</span></label></div>`).join('')}
+          </div>
+          <div class="fcell">
+            <div class="flbl">응답 시간 임계치 (ms)</div><input class="finput" type="number" value="2000" style="margin-bottom:8px">
+            <div class="flbl">디스크 임계치 (%)</div><input class="finput" type="number" value="80">
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ════ MODALS ════ */
+function showUploadModal() { document.getElementById('uploadModal').classList.add('on'); }
+function showDeleteModal(id) { document.getElementById('deleteModal').classList.add('on'); }
+function showAddUser() { document.getElementById('addUserModal').classList.add('on'); }
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZ').classList.remove('drag');
+  addFilesToList([...e.dataTransfer.files]);
+}
+function handleFileInput(inp) { addFilesToList([...inp.files]); }
+function addFilesToList(files) {
+  const el = document.getElementById('uploadFileList');
+  if(!el) return;
+  el.innerHTML = files.map(f => `
+    <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span class="tag gray">${f.name.split('.').pop().toUpperCase()}</span>
+      <span style="flex:1;font-size:12px;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span style="font-size:11px;color:var(--t3)">${(f.size/1024/1024).toFixed(1)} MB</span>
+    </div>`).join('');
+}
+
+function doUpload() {
+  closeModal('uploadModal');
+  DATA_SOURCES.unshift({id:'DS-NEW',nm:'신규_업로드_파일.pdf',type:'PDF',sz:'—',cat:'미분류',chunks:0,dim:0,nodes:0,status:'proc',ts:'방금',by:'admin'});
+  renderDataTable();
+  setTimeout(()=>{ DATA_SOURCES[0].status='done'; DATA_SOURCES[0].chunks=88; DATA_SOURCES[0].dim=1536; renderDataTable(); },3000);
+}
+function doDelete() {
+  const v = document.getElementById('deleteConfirmInput')?.value.trim();
+  if(!v) { alert('파일명을 입력해 주세요.'); return; }
+  closeModal('deleteModal');
+  alert(`"${v}" 소프트 삭제 완료. 30일 후 영구 제거됩니다.`);
+}
+function doAddUser() {
+  closeModal('addUserModal');
+  USERS.push({nm:'신규 사용자',email:'new@rag.internal',role:'DATA_ADMIN',last:'—',status:'active'});
+  renderUsers();
+  alert('계정이 생성되었으며 임시 비밀번호가 이메일로 발송되었습니다.');
+}
+
+/* ════ MISC ════ */
+function testLLM() { alert('[연결 테스트 결과]\n✓ Claude 3.5 Sonnet API 응답 정상 (218ms)\n✓ 모델 claude-3-5-sonnet-20241022'); }
+function testAlert() { alert('[테스트 알림 발송 완료]\n이메일: admin@anchors-biz.com으로 발송되었습니다.'); }
+function saveSysSet() {
+  const btn = document.querySelector('#p-sysset .btn.gold');
+  if(!btn) return;
+  const orig = btn.textContent;
+  btn.textContent='저장 완료 ✓'; btn.style.color='var(--green)'; btn.style.borderColor='var(--green-b)';
+  setTimeout(()=>{ btn.textContent=orig; btn.style.color=''; btn.style.borderColor=''; },2000);
+}
+function applyExtract() { alert('기존 파일 27개에 새 개체 추출 설정을 일괄 재적용합니다.\n예상 소요: 약 15분'); }
+function updateEmbInfo() {}
+function updateChunkInfo() {}
+
+/* ════════════════════════════════════════
+   CONSULT — 상담 이력
+════════════════════════════════════════ */
+const CONSULT_LOGS = [
+  {id:'S-2847',ts:'2026-05-18 14:31',user:'김지수 책임',tier:'현대엔지니어링',turns:6,intent:'AEM 도입 사례',sentiment:'중립',csat:5,
+   promptVer:'v2.4', ragRt:'820ms', ragMode:'하이브리드',
+   summary:'AEM 도입 사례 문의 → 삼성/현대/대한항공 사례 안내 → 사전 미팅 예약 안내. 정상 종료.',
+   reviewed:true,label:'positive',
+   messages:[
+    {r:'ai', t:'안녕하세요. Anchors AI 상담 서비스입니다. 무엇을 도와드릴까요?', ts:'14:30:02'},
+    {r:'usr',t:'AEM 도입 사례가 있는지 궁금합니다.', ts:'14:30:18'},
+    {r:'ai', t:'Anchors는 삼성, 현대, 대한항공 등 대기업 대상 AEM 프로젝트를 다수 수행해 왔습니다. 어떤 영역의 사례를 찾고 계신가요?', ts:'14:30:22'},
+    {r:'usr',t:'글로벌 멀티사이트 구축이요', ts:'14:30:41'},
+    {r:'ai', t:'글로벌 멀티사이트 구축 사례가 가장 많은 영역입니다. 상세 자료는 NDA 협의 후 제공 가능하며, contact@anchors-biz.com으로 요청 부탁드립니다.', ts:'14:30:45'},
+    {r:'usr',t:'감사합니다!', ts:'14:31:03'},
+  ]},
+  {id:'S-2846',ts:'2026-05-18 14:28',user:'이윤아 부장',tier:'Enterprise · 삼성전자',turns:4,intent:'긴급 운영 지원',sentiment:'긍정',csat:null,
+   promptVer:'v2.4', ragRt:'1,240ms', ragMode:'그래프',
+   summary:'운영 중 사이트 긴급 이슈 → 신뢰도 68% 미달 → 전담 PM 핸드오버 처리.',
+   reviewed:false,label:null,
+   messages:[
+    {r:'ai', t:'안녕하세요. Anchors AI 상담 서비스입니다.', ts:'14:27:05'},
+    {r:'usr',t:'운영 중인 사이트에 긴급 이슈가 발생했습니다. 전담 PM 연결 가능할까요?', ts:'14:27:31'},
+    {r:'ai', t:'고객님은 Enterprise 통합 운영 계약 고객이십니다. 전담 PM에게 즉시 연결해 드리겠습니다.', ts:'14:27:38'},
+    {r:'usr',t:'네, 부탁드려요', ts:'14:28:04'},
+  ]},
+  {id:'S-2845',ts:'2026-05-18 14:24',user:'박서현 매니저',tier:'신규 문의',turns:8,intent:'견적 문의',sentiment:'중립',csat:4,
+   promptVer:'v2.3', ragRt:'780ms', ragMode:'하이브리드',
+   summary:'Salesforce 도입 견적 문의. 사전 컨설팅 → PoC → 본 구축 단계별 산정 기준 안내 완료.',
+   reviewed:true,label:'positive',
+   messages:[
+    {r:'ai', t:'안녕하세요, 무엇을 도와드릴까요?', ts:'14:23:11'},
+    {r:'usr',t:'견적 받고 싶어요', ts:'14:23:29'},
+    {r:'ai', t:'정확한 산정을 위해 확인이 필요합니다. 어떤 영역의 프로젝트를 검토하고 계신가요?', ts:'14:23:34'},
+    {r:'usr',t:'Salesforce 도입 컨설팅이요', ts:'14:23:58'},
+    {r:'ai', t:'사전 컨설팅(2주) → PoC(4-6주) → 본 구축(3-6개월) 단계로 진행됩니다. 정확한 견적은 RFP 송부 후 영업일 3일 이내 회신드립니다.', ts:'14:24:04'},
+    {r:'usr',t:'PoC만 진행하는 것도 가능한가요?', ts:'14:24:22'},
+    {r:'ai', t:'네, PoC 단독 진행 가능합니다. PoC 종료 후 본 계약 미체결 시까지 추가 비용 없이 중단 가능합니다.', ts:'14:24:29'},
+    {r:'usr',t:'알겠습니다', ts:'14:24:51'},
+  ]},
+  {id:'S-2844',ts:'2026-05-18 14:19',user:'최다은 과장',tier:'진행 중 PoC',turns:6,intent:'PoC 피드백 / 보완 검토',sentiment:'긍정',csat:5,
+   promptVer:'v2.4', ragRt:'740ms', ragMode:'하이브리드',
+   summary:'PoC 결과 기대와 다르다는 피드백 → AI가 공감·구체 질문 후 보완 옵션 3가지 제시 → PoC 리뷰 미팅 예약으로 회복.',
+   reviewed:true,label:'positive',
+   messages:[
+    {r:'ai', t:'안녕하세요, 무엇을 도와드릴까요?', ts:'14:18:03'},
+    {r:'usr',t:'PoC 결과가 기대와 달라서 검토가 필요합니다.', ts:'14:18:22'},
+    {r:'ai', t:'피드백 공유 감사드립니다. 어떤 부분에서 차이가 컸는지 더 정확히 파악할 수 있다면 보완 방향을 함께 검토해 드리겠습니다.', ts:'14:18:28'},
+    {r:'usr',t:'기능 범위가 처음 협의했던 것보다 좁아진 것 같아요.', ts:'14:18:48'},
+    {r:'ai', t:'기능 범위 차이는 PoC 종료 전에 충분히 조정 가능합니다. PoC 리뷰 미팅(담당 PM 점검), 추가 스프린트 1주 보강, 본 계약 미체결 시 안전한 종료 옵션이 있습니다.', ts:'14:18:55'},
+    {r:'usr',t:'PoC 리뷰 미팅 예약 부탁드립니다.', ts:'14:19:08'},
+  ]},
+  {id:'S-2843',ts:'2026-05-18 14:14',user:'정하은 책임',tier:'신규 문의',turns:7,intent:'Salesforce 패키지',sentiment:'긍정',csat:5,
+   promptVer:'v2.4', ragRt:'620ms', ragMode:'BM25',
+   summary:'Salesforce 도입 패키지 라인업(Sales/Service/Marketing/Experience Cloud) 전체 안내. 추후 자료 요청 유도 완료.',
+   reviewed:true,label:'positive',
+   messages:[
+    {r:'ai', t:'안녕하세요, 무엇을 도와드릴까요?', ts:'14:13:02'},
+    {r:'usr',t:'Salesforce 패키지 종류 알려줘', ts:'14:13:21'},
+    {r:'ai', t:'Salesforce 도입 패키지는 Sales Cloud, Service Cloud, Marketing Cloud, Experience Cloud 네 가지 라인업이 있습니다.', ts:'14:13:26'},
+    {r:'usr',t:'견적도 알려줘요', ts:'14:13:44'},
+    {r:'ai', t:'정확한 견적은 RFP 송부 후 영업일 3일 이내 회신드립니다. 검토 중인 규모를 알려주시면 사전 자료를 발송해 드립니다.', ts:'14:13:51'},
+    {r:'usr',t:'사례 자료 좀 받고 싶어요', ts:'14:14:08'},
+    {r:'ai', t:'contact@anchors-biz.com으로 회신 부탁드립니다. 영업일 1일 이내 자료 발송해 드리겠습니다.', ts:'14:14:15'},
+  ]},
+  {id:'S-2840',ts:'2026-05-18 13:55',user:'홍민준 팀장',tier:'운영 계약 · 대한항공',turns:3,intent:'운영 장애 / 즉시 응대',sentiment:'긍정',csat:5,
+   promptVer:'v2.4', ragRt:'1,180ms', ragMode:'하이브리드',
+   summary:'라이브 응답 지연 문의 → AI가 모니터링 정보 즉시 조회·전달 후 SLA 기준 자동 핸드오버 → 5분 내 운영 책임자 직접 응대 연결. 즉시 대응 우수 사례.',
+   reviewed:true,label:'positive',
+   messages:[
+    {r:'ai', t:'안녕하세요, 홍민준 팀장님. Enterprise 운영 계약 고객이시군요. 무엇을 도와드릴까요?', ts:'13:53:14'},
+    {r:'usr',t:'라이브 사이트 응답이 없는데 상태 확인 가능할까요?', ts:'13:53:38'},
+    {r:'ai', t:'라이브 운영 이슈가 감지되어 모니터링 정보를 즉시 조회했습니다. 13:20 응답 지연 알람 발생, 영향 범위 예약 모듈 일부, 운영팀 13:24 인지 후 대응 중. SLA 기준 즉시 응대 대상이므로 전담 PM 및 운영 책임자에게 자동 연결하겠습니다.', ts:'13:53:46'},
+    {r:'usr',t:'(운영 책임자 연결)', ts:'13:55:02'},
+  ]},
+];
+
+/* ═══════════════════════════════════════════
+   SLIDE PANEL — 대화 원문 + 요약 연결 뷰
+═══════════════════════════════════════════ */
+let _panelSession = null;   // 현재 패널에 열린 세션 ID
+
+function openPanel(id, focusSummary) {
+  const s = CONSULT_LOGS.find(x => x.id === id);
+  if (!s) return;
+  _panelSession = id;
+
+  const sentCol = {긍정:'var(--green)',중립:'var(--t3)',부정:'var(--warn)','매우 분노':'var(--red)'};
+
+  /* 헤더 */
+  document.getElementById('spTitle').textContent = `${s.id} — ${s.user} (${s.tier})`;
+  document.getElementById('spMeta').textContent =
+    `${s.ts} · 인텐트: ${s.intent} · 감정: ${s.sentiment} · 턴: ${s.turns}턴 · CSAT: ${s.csat != null ? s.csat+'/5' : '—'}`;
+  document.getElementById('spTurnCount').textContent = `${s.messages.length}개 메시지`;
+
+  /* 검수 배지 */
+  const badge = document.getElementById('spReviewBadge');
+  badge.innerHTML = `<span class="tag ${s.reviewed ? 'green' : 'warn'}">${s.reviewed ? '검수 완료' : '검수 대기'}</span>`;
+
+  /* 대화 원문 버블 */
+  document.getElementById('spMsgs').innerHTML = s.messages.map(m => `
+    <div class="bbl-row ${m.r}">
+      <div class="bbl-avi ${m.r}">${m.r === 'ai' ? 'AI' : 'U'}</div>
+      <div>
+        <div class="bbl ${m.r}">${esc(m.t)}</div>
+        <span class="bbl-ts">${m.ts}</span>
+      </div>
+    </div>`).join('');
+
+  /* ② ③ 요약 패널 — RAG 지표 + 프롬프트 버전 링크 */
+  const reviewed = s.reviewed;
+  const pv = PROMPT_VERSIONS.find(p => p.id === s.promptVer);
+  const ql = QUERY_LOG.find(q => q.sessionId === s.id);
+  document.getElementById('spSumBody').innerHTML = `
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">프롬프트 버전</div>
+      <span class="sid-link" onclick="jumpToPromptVer('${s.promptVer}')" title="프롬프트 버전 이력에서 보기">
+        ${s.promptVer} · ${pv ? pv.model : '—'}
+      </span>
+      ${pv ? `<div style="font-size:10px;color:var(--t4);margin-top:3px">${pv.name}${pv.note?' — '+pv.note:''}</div>` : ''}
+    </div>
+    <div style="margin-bottom:12px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border2)">
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">RAG 검색 지표</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div><div style="font-size:10px;color:var(--t4)">응답 시간</div>
+          <div style="font-family:monospace;font-size:13px;color:${s.ragRt&&parseInt(s.ragRt)>1500?'var(--warn)':'var(--green)'}">${s.ragRt||'—'}</div></div>
+        <div><div style="font-size:10px;color:var(--t4)">검색 방식</div>
+          <div><span class="tag gray" style="font-size:10px">${s.ragMode||'—'}</span></div></div>
+        <div><div style="font-size:10px;color:var(--t4)">쿼리 로그</div>
+          ${ql
+            ? `<span class="sid-link" style="font-size:11px" onclick="jumpToQueryLog('${s.id}')" title="모니터링 쿼리 로그에서 보기">로그 보기 →</span>`
+            : `<span style="font-size:11px;color:var(--t4)">—</span>`}
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">LLM 생성 요약 <span style="color:var(--t4);text-transform:none;letter-spacing:0">— 직접 수정 가능</span></div>
+      <textarea id="spSumText" class="finput" rows="5" style="font-size:12px;line-height:18px">${s.summary}</textarea>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">감정 분류</div>
+      <span style="font-size:12px;color:${sentCol[s.sentiment]||'var(--t3)'}">${s.sentiment}</span>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:6px">레이블</div>
+      ${s.label ? `<span class="tag ${s.label==='positive'?'green':'red'}">${s.label==='positive'?'모범 답안':'오답'}</span>` : '<span style="color:var(--t4);font-size:12px">미지정</span>'}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${!reviewed ? `
+        <button class="btn green" style="width:100%" onclick="panelApprove('${s.id}')">요약 승인</button>
+        <button class="btn red"   style="width:100%" onclick="panelReject('${s.id}')">반려 · 재생성 요청</button>` :
+        `<div class="alert green" style="margin:0;font-size:11px">이 세션의 요약본이 검수 완료되었습니다.</div>`}
+      <button class="btn" style="width:100%;margin-top:4px" onclick="panelSaveSummary('${s.id}')">요약 수동 저장</button>
+    </div>`;
+
+  /* 패널 열기 */
+  document.getElementById('spOverlay').classList.add('on');
+  document.getElementById('spPanel').classList.add('on');
+
+  /* focusSummary=true면 요약 영역으로 스크롤 */
+  if (focusSummary) {
+    setTimeout(() => {
+      const ta = document.getElementById('spSumText');
+      if (ta) ta.focus();
+    }, 280);
+  }
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function closePanel() {
+  document.getElementById('spOverlay').classList.remove('on');
+  document.getElementById('spPanel').classList.remove('on');
+  _panelSession = null;
+}
+
+/* 패널 내 승인/반려/저장 */
+function panelApprove(id) {
+  const s = CONSULT_LOGS.find(x => x.id === id);
+  if (s) {
+    s.reviewed = true;
+    document.getElementById('spReviewBadge').innerHTML = '<span class="tag green">검수 완료</span>';
+    document.getElementById('spSumBody').querySelector('.btn.green')?.closest('div')?.remove();
+    renderConsultTab(consultTab);     /* 배경 테이블 즉시 갱신 */
+  }
+}
+function panelReject(id) {
+  const s = CONSULT_LOGS.find(x => x.id === id);
+  if (s) {
+    alert(`[${id}] 반려 처리 — 재생성 큐에 등록합니다.`);
+    closePanel();
+    renderConsultTab(consultTab);
+  }
+}
+function panelSaveSummary(id) {
+  const s = CONSULT_LOGS.find(x => x.id === id);
+  const ta = document.getElementById('spSumText');
+  if (s && ta) {
+    s.summary = ta.value;
+    /* 저장 피드백 */
+    const btn = document.querySelector('#spPanel .btn:last-child');
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '저장 완료 ✓'; btn.style.color = 'var(--green)';
+      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1800);
+    }
+    renderConsultTab(consultTab);
+  }
+}
+
+/* 요약본 검수 탭으로 직접 이동 */
+function goToSummaryTab() {
+  closePanel();
+  activateTab('consult', 1);
+  /* 해당 세션 카드로 스크롤 (약간 딜레이 후) */
+  if (_panelSession) {
+    setTimeout(() => {
+      const el = document.querySelector(`[data-session="${_panelSession}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 120);
+  }
+}
+
+/* 키보드 ESC 닫기 */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+const PROMPT_VERSIONS = [
+  {id:'v2.4',name:'요약 프롬프트',model:'Claude 3.5 Sonnet',created:'2026-05-17',author:'admin',active:true,note:'감정 분류 필드 추가'},
+  {id:'v2.3',name:'요약 프롬프트',model:'Claude 3.5 Sonnet',created:'2026-05-10',author:'admin',active:false,note:''},
+  {id:'v1.8',name:'감정 분석 프롬프트',model:'GPT-4o',created:'2026-05-15',author:'data_admin',active:true,note:'한국어 감정 6분류'},
+  {id:'v1.7',name:'감정 분석 프롬프트',model:'GPT-4o',created:'2026-05-01',author:'data_admin',active:false,note:''},
+  {id:'v3.2',name:'분류 프롬프트',model:'Claude 3.5 Sonnet',created:'2026-05-18',author:'admin',active:true,note:'신규 intent 5개 추가'},
+];
+
+let consultTab = 0;
+function setConsultTab(i, btn) {
+  consultTab = i;
+  activateTab('consult', i);
+}
+function renderConsultTab(i) {
+  const c = document.getElementById('consultContent');
+  if (i === 0) {
+    const sentCol = {긍정:'var(--green)',중립:'var(--t3)',부정:'var(--warn)','매우 분노':'var(--red)'};
+    c.innerHTML = `
+      <div class="fstrip">
+        <input class="finput" style="width:160px;height:22px;font-size:11px" placeholder="세션 ID / 고객명 검색…" oninput="filterConsultLog(this.value)">
+        <span class="fsep">|</span>
+        <button class="fchip on" onclick="chipOn(this);filterConsultLog('')">전체</button>
+        <button class="fchip"    onclick="chipOn(this);filterConsultLog('검수 필요')">검수 필요</button>
+        <button class="fchip"    onclick="chipOn(this);filterConsultLog('매우 분노')">매우 분노</button>
+        <span class="fsep">|</span>
+        <button class="fchip"    onclick="chipOn(this)">오늘</button>
+        <button class="fchip"    onclick="chipOn(this)">7일</button>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr>
+          <th>세션 ID</th><th>시각</th><th>고객</th><th>등급</th><th>턴</th>
+          <th>인텐트</th><th>감정</th><th>CSAT</th>
+          <th>LLM 요약 미리보기</th>
+          <th>검수</th><th>레이블</th><th>작업</th>
+        </tr></thead>
+        <tbody id="consultLogTbody">${renderConsultRows(CONSULT_LOGS)}</tbody>
+      </table></div>`;
+
+  } else if (i === 1) {
+    const unreviewed = CONSULT_LOGS.filter(s => !s.reviewed);
+    c.innerHTML = `
+      <div style="flex:1;overflow-y:auto;padding:14px 16px">
+        <div class="alert warn" style="margin-bottom:12px">
+          검수 대기 ${unreviewed.length}건 — 요약본 옆 <strong style="color:var(--t1)">대화 보기</strong>를 눌러 원문과 함께 검수하세요.
+        </div>
+        ${CONSULT_LOGS.map(s => `
+          <div data-session="${s.id}" style="background:var(--bg1);border:1px solid ${s.reviewed?'var(--border2)':'var(--gold-b)'};margin-bottom:8px;opacity:${s.reviewed?'.55':'1'}">
+            <!-- 카드 헤더 -->
+            <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <!-- 세션 ID → 패널 열기 링크 -->
+                <span class="sid-link" onclick="openPanel('${s.id}')" title="대화 원문 보기">
+                  ▤ ${s.id}
+                </span>
+                <span style="font-size:11px;color:var(--t2)">${s.user} · ${s.tier}</span>
+                <span style="font-size:11px;color:var(--t3)">${s.ts.split(' ')[1]}</span>
+                <span style="font-size:11px">감정:
+                  <span style="color:${s.sentiment==='매우 분노'?'var(--red)':s.sentiment==='부정'?'var(--warn)':'var(--t2)'}">${s.sentiment}</span>
+                </span>
+                <span style="font-size:11px;color:var(--t3)">인텐트: ${s.intent}</span>
+                <span style="font-size:11px;color:var(--t3)">${s.turns}턴</span>
+              </div>
+              <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+                <span class="tag ${s.reviewed?'green':'warn'}">${s.reviewed?'검수 완료':'대기'}</span>
+                <button class="btn sm" onclick="openPanel('${s.id}',true)">대화 보기</button>
+                ${!s.reviewed ? `
+                  <button class="btn sm green" onclick="approveReview('${s.id}')">승인</button>
+                  <button class="btn sm red"   onclick="rejectReview('${s.id}')">반려</button>` : ''}
+              </div>
+            </div>
+            <!-- 요약 인라인 편집 -->
+            <div style="padding:10px 12px;display:flex;gap:10px">
+              <div style="flex:1">
+                <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--t3);margin-bottom:5px">
+                  LLM 생성 요약 <span style="color:var(--t4);text-transform:none;letter-spacing:0">— 직접 수정 가능</span>
+                </div>
+                <textarea class="finput" rows="2" style="font-size:12px"
+                  onchange="updateSummary('${s.id}',this.value)">${s.summary}</textarea>
+              </div>
+              <!-- 원문 첫 발화 힌트 -->
+              <div style="width:200px;flex-shrink:0;border-left:1px solid var(--border);padding-left:10px">
+                <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t4);margin-bottom:5px">첫 고객 발화</div>
+                <div style="font-size:11px;color:var(--t2);line-height:16px">"${s.messages.find(m=>m.r==='usr')?.t||'—'}"</div>
+                <div style="margin-top:6px">
+                  <span class="sid-link" style="font-size:11px" onclick="openPanel('${s.id}')">전체 대화 보기 →</span>
+                </div>
+              </div>
+            </div>
+          </div>`).join('')}
+        ${CONSULT_LOGS.length===0?'<div style="color:var(--t4);padding:20px;text-align:center">데이터가 없습니다.</div>':''}
+      </div>`;
+
+  } else if (i === 2) {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">프롬프트 템플릿 버전 이력</span><button class="btn sm gold" onclick="addPromptVersion()">신규 버전 등록</button></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>버전</th><th>템플릿명</th><th>모델</th><th>생성일</th><th>작성자</th><th>상태</th><th>변경 메모</th><th>사용 건수</th><th>작업</th></tr></thead>
+            <tbody id="promptVerTable">${renderPromptVerRows()}</tbody>
+          </table></div>
+        </div>
+        <div class="alert info" style="margin-top:8px">활성 버전은 즉시 파이프라인에 반영됩니다. 롤백 시 이전 버전을 '활성화'로 전환하세요.</div>
+      </div>`;
+  } else {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="grid g3" style="margin-bottom:12px">
+          <div class="card"><div class="card-lbl">모범 답안</div><div class="card-val green">142</div><div class="card-sub">파인튜닝용 선별</div></div>
+          <div class="card"><div class="card-lbl">오답 사례</div><div class="card-val red">28</div><div class="card-sub">개선 데이터</div></div>
+          <div class="card"><div class="card-lbl">Few-shot 예시</div><div class="card-val gold">35</div><div class="card-sub">프롬프트 삽입용</div></div>
+        </div>
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">파인튜닝 데이터셋 관리</span>
+            <div style="display:flex;gap:5px">
+              <button class="btn sm">JSONL 내보내기</button>
+              <button class="btn sm gold">CSV 내보내기</button>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>세션 ID</th><th>인텐트</th><th>원본 질문 (요약)</th><th>레이블</th><th>용도</th><th>추가일</th><th>작업</th></tr></thead>
+            <tbody>${CONSULT_LOGS.filter(s=>s.label).map(s=>`<tr>
+              <td><span class="sid-link" onclick="openPanel('${s.id}')">${s.id}</span></td>
+              <td>${s.intent}</td>
+              <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.summary}</td>
+              <td><span class="tag ${s.label==='positive'?'green':'red'}">${s.label==='positive'?'모범 답안':'오답'}</span></td>
+              <td><span class="tag gray">${s.label==='positive'?'Fine-tuning':'개선용'}</span></td>
+              <td style="font-size:11px;color:var(--t4)">2026-05-18</td>
+              <td><button class="btn sm red" onclick="removeFtData('${s.id}')">제거</button></td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </div>
+      </div>`;
+  }
+}
+
+/* 대화 로그 행 렌더 (필터용 분리) */
+function renderConsultRows(list) {
+  const sentCol = {긍정:'var(--green)',중립:'var(--t3)',부정:'var(--warn)','매우 분노':'var(--red)'};
+  return list.map(s => `<tr>
+    <td>
+      <span class="sid-link" onclick="openPanel('${s.id}')" title="대화 원문 보기">▤ ${s.id}</span>
+    </td>
+    <td style="font-size:11px;color:var(--t4)">${s.ts.split(' ')[1]}</td>
+    <td class="w">${s.user}</td>
+    <td><span class="tag ${s.tier.includes('Platinum')?'gold':s.tier.includes('VIP')?'warn':'gray'}">${s.tier}</span></td>
+    <td>${s.turns}</td>
+    <td style="color:var(--t2)">${s.intent}</td>
+    <td style="color:${sentCol[s.sentiment]||'var(--t3)'}">${s.sentiment}</td>
+    <td>${s.csat!=null?'★'.repeat(s.csat)+'☆'.repeat(5-s.csat):'—'}</td>
+    <!-- 요약 미리보기 + 검수 상태 연결 -->
+    <td>
+      <div style="display:flex;align-items:flex-start;gap:5px">
+        <div class="sum-dot" style="background:${s.reviewed?'var(--green)':'var(--warn)'}"></div>
+        <span class="sum-preview" title="${s.summary}">${s.summary}</span>
+      </div>
+    </td>
+    <td>
+      <span class="tag ${s.reviewed?'green':'warn'}" style="cursor:pointer" onclick="openPanel('${s.id}',true)" title="요약 검수 패널 열기">
+        ${s.reviewed?'완료':'대기'}
+      </span>
+    </td>
+    <td>${s.label?`<span class="tag ${s.label==='positive'?'green':'red'}">${s.label==='positive'?'모범':'오답'}</span>`:'—'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn sm" onclick="openPanel('${s.id}')">대화+요약</button>
+      <button class="btn sm gold" style="margin-left:3px" onclick="labelSession('${s.id}')">레이블</button>
+    </td>
+  </tr>`).join('');
+}
+
+/* 대화 로그 필터 */
+function filterConsultLog(keyword) {
+  const tbody = document.getElementById('consultLogTbody');
+  if (!tbody) return;
+  let list = CONSULT_LOGS;
+  if (keyword === '검수 필요') list = list.filter(s => !s.reviewed);
+  else if (keyword === '매우 분노') list = list.filter(s => s.sentiment === '매우 분노');
+  else if (keyword) list = list.filter(s =>
+    s.id.includes(keyword) || s.user.includes(keyword) || s.intent.includes(keyword));
+  tbody.innerHTML = renderConsultRows(list);
+}
+
+/* 요약본 인라인 수정 저장 */
+function updateSummary(id, val) {
+  const s = CONSULT_LOGS.find(x => x.id === id);
+  if (s) s.summary = val;
+}
+function renderPromptVerRows() {
+  return PROMPT_VERSIONS.map(p => {
+    const usageCount = CONSULT_LOGS.filter(s => s.promptVer === p.id).length;
+    return `<tr id="pvr-${p.id}">
+      <td style="font-family:monospace;color:var(--gold)">${p.id}</td>
+      <td class="w">${p.name}</td>
+      <td><span class="tag gray">${p.model}</span></td>
+      <td style="font-size:11px;color:var(--t4)">${p.created}</td>
+      <td style="color:var(--t3)">${p.author}</td>
+      <td><span class="tag ${p.active?'green':'gray'}">${p.active?'활성':'비활성'}</span></td>
+      <td style="font-size:11px;color:var(--t3)">${p.note||'—'}</td>
+      <td>
+        ${usageCount > 0
+          ? `<span class="sid-link" style="font-size:11px" onclick="filterConsultByPromptVer('${p.id}')"
+               title="이 버전으로 생성된 세션 목록 보기">${usageCount}건 →</span>`
+          : `<span style="font-size:11px;color:var(--t4)">0건</span>`}
+      </td>
+      <td style="white-space:nowrap">
+        ${!p.active?`<button class="btn sm green" onclick="activatePrompt('${p.id}','${p.name}')">활성화 (롤백)</button>`:'<span style="font-size:11px;color:var(--t3)">현재 활성</span>'}
+        <button class="btn sm" style="margin-left:3px" onclick="viewPromptDetail('${p.id}')">상세</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function viewLog(id) { openPanel(id); }
+function labelSession(id) {
+  const s = CONSULT_LOGS.find(x=>x.id===id);
+  if(!s) return;
+  const choice = confirm(`[${id}] 레이블 지정\n확인 = 모범 답안 / 취소 = 오답`);
+  s.label = choice ? 'positive' : 'negative';
+  renderConsultTab(consultTab);
+}
+function approveReview(id) {
+  const s = CONSULT_LOGS.find(x=>x.id===id);
+  if(s) { s.reviewed = true; renderConsultTab(1); }
+}
+function rejectReview(id) {
+  alert(`[${id}] 요약본이 반려되었습니다. 재생성 큐에 등록합니다.`);
+}
+function activatePrompt(id, name) {
+  PROMPT_VERSIONS.forEach(p=>{ if(p.name===name) p.active=(p.id===id); });
+  const tb = document.getElementById('promptVerTable');
+  if(tb) tb.innerHTML = renderPromptVerRows();
+  showInjectToast('nlp-inject-status','프롬프트 v'+id+' 활성화 — 파이프라인 반영 완료');
+}
+function viewPromptDetail(id) { alert(`프롬프트 ${id} 상세 내용\n시스템 프롬프트 전문, 변수 목록, 이전 버전과의 diff를 슬라이드 패널로 표시합니다.`); }
+function addPromptVersion() { alert('신규 프롬프트 버전 등록\n템플릿 편집기 모달을 열어 버전 ID, 모델, 내용을 입력합니다.'); }
+function exportFinetuneData() { alert('파인튜닝 데이터셋을 JSONL 형식으로 내보냅니다.\n모범 답안 142건 + Few-shot 35건 포함'); }
+function removeFtData(id) { alert(`[${id}] 파인튜닝 데이터셋에서 제거합니다.`); }
+
+/* ════════════════════════════════════════
+   NLP GUARDRAILS
+════════════════════════════════════════ */
+let BLACKLIST = [
+  {id:'BL-001',word:'바보',cat:'욕설/비하',scope:'입력+출력',active:true},
+  {id:'BL-002',word:'멍청이',cat:'욕설/비하',scope:'입력+출력',active:true},
+  {id:'BL-003',word:'\\d{6}-\\d{7}',cat:'PII(주민번호)',scope:'출력 마스킹',active:true},
+  {id:'BL-004',word:'\\d{3}-\\d{4}-\\d{4}',cat:'PII(전화번호)',scope:'출력 마스킹',active:true},
+  {id:'BL-005',word:'경쟁사A',cat:'경쟁사 언급',scope:'출력 차단',active:true},
+  {id:'BL-006',word:'내부비밀문서',cat:'보안 키워드',scope:'입력+출력',active:false},
+];
+let THESAURUS = [
+  {id:'TH-001',canonical:'결제',synonyms:'돈 냈다, 입금함, 페이, 카드 긁었다, 구매함'},
+  {id:'TH-002',canonical:'교환',synonyms:'바꿔줘, 교체, 다른 걸로, 스왑'},
+  {id:'TH-003',canonical:'환불',synonyms:'돈 돌려줘, 취소, 반품, 캔슬'},
+  {id:'TH-004',canonical:'VIP',synonyms:'VIP 고객, 플래티넘, 골드 멤버, 우수 회원'},
+  {id:'TH-005',canonical:'PM',synonyms:'프로젝트 매니저, 프로젝트 리더, PL'},
+];
+let STOPWORDS = ['은','는','이','가','을','를','에','의','과','와','도','로','으로','에서','까지'];
+let GUARDRAILS = [
+  {id:'GR-001',keyword:'주식 정보',type:'범위 외',response:'죄송합니다, 해당 정보는 제공 범위 밖입니다.',active:true},
+  {id:'GR-002',keyword:'의료 진단',type:'범위 외',response:'의료 관련 질문은 전문의와 상담하시기 바랍니다.',active:true},
+  {id:'GR-003',keyword:'법적 조언',type:'범위 외',response:'법률 관련 내용은 전문 법률가와 상담하세요.',active:false},
+];
+
+let nlpTab = 0;
+function setNlpTab(i, btn) {
+  nlpTab = i;
+  activateTab('nlp', i);
+}
+function renderNlpTab(i) {
+  const c = document.getElementById('nlpContent');
+  if (i === 0) {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="alert info" style="margin-bottom:10px">변경 사항은 <strong style="color:var(--t1)">규칙 즉시 반영 (Inject)</strong> 버튼을 누르면 파이프라인 환경 변수에 실시간 업데이트됩니다.</div>
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">금칙어 · 블랙리스트 (${BLACKLIST.length}건)</span>
+            <button class="btn sm gold" onclick="addBlacklist()">항목 추가</button>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>ID</th><th>단어 / 패턴 (Regex)</th><th>카테고리</th><th>적용 범위</th><th>활성</th><th>작업</th></tr></thead>
+            <tbody id="blTable">${renderBLRows()}</tbody>
+          </table></div>
+        </div>
+        <div class="frow" style="margin-top:8px">
+          <div class="fcell"><div class="flbl">빠른 추가</div>
+            <div style="display:flex;gap:6px">
+              <input class="finput" id="blNewWord" placeholder="단어 또는 정규식 패턴" style="flex:1">
+              <select class="fselect" id="blNewCat" style="width:130px">
+                <option>욕설/비하</option><option>PII(주민번호)</option><option>PII(전화번호)</option><option>경쟁사 언급</option><option>보안 키워드</option>
+              </select>
+              <select class="fselect" id="blNewScope" style="width:110px">
+                <option>입력+출력</option><option>출력 마스킹</option><option>출력 차단</option>
+              </select>
+              <button class="btn gold" onclick="quickAddBL()">추가</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } else if (i === 1) {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">유사어 · 동의어 사전 (${THESAURUS.length}건)</span>
+            <button class="btn sm gold" onclick="addThesaurus()">매핑 추가</button>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>ID</th><th>대표어 (Canonical)</th><th>유사어 / 동의어 목록</th><th>작업</th></tr></thead>
+            <tbody id="thTable">${renderTHRows()}</tbody>
+          </table></div>
+        </div>
+        <div class="frow" style="margin-top:8px">
+          <div class="fcell"><div class="flbl">빠른 추가</div>
+            <div style="display:flex;gap:6px">
+              <input class="finput" id="thCanon" placeholder="대표어" style="width:120px">
+              <input class="finput" id="thSyns"  placeholder="유사어 (쉼표 구분)" style="flex:1">
+              <button class="btn gold" onclick="quickAddTH()">추가</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } else if (i === 2) {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">불용어 사전 (${STOPWORDS.length}건)</span>
+            <button class="btn sm gold" onclick="addStopword()">추가</button>
+          </div>
+          <div style="background:var(--bg1);padding:12px;display:flex;flex-wrap:wrap;gap:6px" id="stopwordChips">
+            ${STOPWORDS.map(w=>`<span class="chip" style="cursor:pointer" onclick="removeStopword('${w}')" title="클릭하여 제거">${w} ✕</span>`).join('')}
+          </div>
+          <div style="padding:10px 12px;border-top:1px solid var(--border);background:var(--bg1);display:flex;gap:6px">
+            <input class="finput" id="swNew" placeholder="불용어 직접 입력" style="width:200px">
+            <button class="btn gold" onclick="quickAddSW()">추가</button>
+          </div>
+        </div>
+        <div class="alert info" style="margin-top:8px">불용어는 의미 분석(임베딩 · NLU)에서 제외됩니다. 조사, 어미, 특수문자를 등록하세요.</div>
+      </div>`;
+  } else {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">할루시네이션 방지 가드레일 (${GUARDRAILS.length}건)</span>
+            <button class="btn sm gold" onclick="addGuardrail()">규칙 추가</button>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>ID</th><th>트리거 키워드</th><th>유형</th><th>거부 응답 템플릿</th><th>활성</th><th>작업</th></tr></thead>
+            <tbody id="grTable">${renderGRRows()}</tbody>
+          </table></div>
+        </div>
+        <div class="frow" style="margin-top:8px">
+          <div class="fcell"><div class="flbl">빠른 추가</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <input class="finput" id="grKw"  placeholder="트리거 키워드" style="width:140px">
+              <select class="fselect" id="grType" style="width:100px"><option>범위 외</option><option>위험 주제</option><option>PII 요청</option></select>
+              <input class="finput" id="grResp" placeholder="거부 응답 문구" style="flex:1">
+              <button class="btn gold" onclick="quickAddGR()">추가</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+function renderBLRows() {
+  return BLACKLIST.map(b=>`<tr>
+    <td style="font-family:monospace;font-size:11px;color:var(--t3)">${b.id}</td>
+    <td class="w" style="font-family:monospace">${b.word}</td>
+    <td><span class="tag ${b.cat.includes('PII')?'warn':b.cat.includes('경쟁')?'blue':'red'}">${b.cat}</span></td>
+    <td style="color:var(--t2)">${b.scope}</td>
+    <td style="text-align:center"><label class="toggle"><input type="checkbox" ${b.active?'checked':''} onchange="toggleBL('${b.id}',this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></td>
+    <td><button class="btn sm red" onclick="deleteBL('${b.id}')">삭제</button></td>
+  </tr>`).join('');
+}
+function renderTHRows() {
+  return THESAURUS.map(t=>`<tr>
+    <td style="font-family:monospace;font-size:11px;color:var(--t3)">${t.id}</td>
+    <td class="w">${t.canonical}</td>
+    <td style="color:var(--t2);font-size:12px">${t.synonyms}</td>
+    <td style="white-space:nowrap"><button class="btn sm" onclick="editTH('${t.id}')">편집</button><button class="btn sm red" style="margin-left:3px" onclick="deleteTH('${t.id}')">삭제</button></td>
+  </tr>`).join('');
+}
+function renderGRRows() {
+  return GUARDRAILS.map(g=>`<tr>
+    <td style="font-family:monospace;font-size:11px;color:var(--t3)">${g.id}</td>
+    <td class="w">${g.keyword}</td>
+    <td><span class="tag warn">${g.type}</span></td>
+    <td style="font-size:12px;color:var(--t2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.response}</td>
+    <td style="text-align:center"><label class="toggle"><input type="checkbox" ${g.active?'checked':''} onchange="toggleGR('${g.id}',this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></td>
+    <td><button class="btn sm red" onclick="deleteGR('${g.id}')">삭제</button></td>
+  </tr>`).join('');
+}
+function toggleBL(id, v) { const b=BLACKLIST.find(x=>x.id===id); if(b) b.active=v; }
+function deleteBL(id) { const i=BLACKLIST.findIndex(x=>x.id===id); if(i>-1){BLACKLIST.splice(i,1); renderNlpTab(0);} }
+function quickAddBL() {
+  const w=document.getElementById('blNewWord')?.value.trim();
+  if(!w) return;
+  BLACKLIST.push({id:'BL-'+String(BLACKLIST.length+1).padStart(3,'0'),word:w,cat:document.getElementById('blNewCat').value,scope:document.getElementById('blNewScope').value,active:true});
+  renderNlpTab(0);
+}
+function editTH(id) { alert(`[${id}] 유사어 편집 모달을 엽니다.`); }
+function deleteTH(id) { const i=THESAURUS.findIndex(x=>x.id===id); if(i>-1){THESAURUS.splice(i,1); renderNlpTab(1);} }
+function quickAddTH() {
+  const canon=document.getElementById('thCanon')?.value.trim(), syns=document.getElementById('thSyns')?.value.trim();
+  if(!canon||!syns) return;
+  THESAURUS.push({id:'TH-'+String(THESAURUS.length+1).padStart(3,'0'),canonical:canon,synonyms:syns});
+  renderNlpTab(1);
+}
+function removeStopword(w) { STOPWORDS=STOPWORDS.filter(x=>x!==w); renderNlpTab(2); }
+function quickAddSW() {
+  const v=document.getElementById('swNew')?.value.trim(); if(!v) return;
+  STOPWORDS.push(v); renderNlpTab(2);
+}
+function toggleGR(id, v) { const g=GUARDRAILS.find(x=>x.id===id); if(g) g.active=v; }
+function deleteGR(id) { const i=GUARDRAILS.findIndex(x=>x.id===id); if(i>-1){GUARDRAILS.splice(i,1); renderNlpTab(3);} }
+function quickAddGR() {
+  const kw=document.getElementById('grKw')?.value.trim(), resp=document.getElementById('grResp')?.value.trim();
+  if(!kw||!resp) return;
+  GUARDRAILS.push({id:'GR-'+String(GUARDRAILS.length+1).padStart(3,'0'),keyword:kw,type:document.getElementById('grType').value,response:resp,active:true});
+  renderNlpTab(3);
+}
+function addBlacklist() { alert('금칙어 추가 모달 (단어/패턴, 카테고리, 범위 입력)'); }
+function addThesaurus() { alert('동의어 매핑 추가 모달'); }
+function addStopword() { alert('불용어 추가 모달'); }
+function addGuardrail() { alert('가드레일 규칙 추가 모달'); }
+function injectNLPRules() {
+  showInjectToast('nlp-inject-status', `금칙어 ${BLACKLIST.filter(b=>b.active).length}건 · 유사어 ${THESAURUS.length}건 · 불용어 ${STOPWORDS.length}건 · 가드레일 ${GUARDRAILS.filter(g=>g.active).length}건 — 환경 변수 Injection 완료`);
+}
+
+/* ════════════════════════════════════════
+   WORKFLOW — LLM Params / RAG / Routing
+════════════════════════════════════════ */
+const PIPELINES = [
+  {id:'PIPE-SUMMARY',name:'요약 파이프라인',model:'Claude 3.5 Sonnet',temp:0.1,maxTok:1024,topP:0.9,active:true},
+  {id:'PIPE-CLASSIFY',name:'분류 파이프라인',model:'Claude 3.5 Sonnet',temp:0.0,maxTok:256,topP:1.0,active:true},
+  {id:'PIPE-SENTIMENT',name:'감정 분석 파이프라인',model:'GPT-4o',temp:0.0,maxTok:128,topP:1.0,active:true},
+  {id:'PIPE-CHATBOT',name:'챗봇 답변 파이프라인',model:'Claude 3.5 Sonnet',temp:0.4,maxTok:2048,topP:0.95,active:true},
+];
+let ROUTING_RULES = [
+  {id:'RR-001',condition:'감정 = 매우 분노',action:'즉시 상담원 이관 (AI 요약 스킵)',priority:1,active:true},
+  {id:'RR-002',condition:'고객 등급 = Enterprise',action:'전담 PM 우선 연결',priority:2,active:true},
+  {id:'RR-003',condition:'인텐트 = 법적 조언',action:'가드레일 차단 후 공지 응답',priority:3,active:true},
+  {id:'RR-004',condition:'신뢰도 < 0.5',action:'핸드오버 제안 (자동 답변 금지)',priority:4,active:false},
+];
+
+let workflowTab = 0;
+function setWorkflowTab(i, btn) {
+  workflowTab = i;
+  activateTab('workflow', i);
+}
+function renderWorkflowTab(i) {
+  const c = document.getElementById('workflowContent');
+  if (i === 0) {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="alert info" style="margin-bottom:10px">파이프라인별 모델과 하이퍼파라미터를 설정합니다. <strong style="color:var(--t1)">설정 즉시 반영 (Inject)</strong>을 눌러 실시간 적용하세요.</div>
+        ${PIPELINES.map((p,pi)=>`
+          <div style="background:var(--bg1);border:1px solid var(--border2);margin-bottom:8px">
+            <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:12px;color:var(--t1)">${p.name}</span>
+                <span class="tag ${p.active?'green':'gray'}" id="pipe-tag-${pi}">${p.active?'활성':'비활성'}</span>
+                <span style="font-family:monospace;font-size:10px;color:var(--t3)">${p.id}</span>
+              </div>
+              <label class="toggle"><input type="checkbox" ${p.active?'checked':''} onchange="togglePipe(${pi},this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+            <div style="display:flex;gap:1px;background:var(--border)">
+              <div style="flex:1.5;background:var(--bg1);padding:10px 12px">
+                <div class="flbl">모델 선택</div>
+                <select class="fselect" onchange="updatePipeModel(${pi},this.value)">
+                  ${['Claude 3.5 Sonnet','GPT-4o','GPT-4','Claude 3 Haiku (Local)'].map(m=>`<option ${m===p.model?'selected':''}>${m}</option>`).join('')}
+                </select>
+              </div>
+              <div style="flex:1;background:var(--bg1);padding:10px 12px">
+                <div class="flbl">Temperature <span style="color:var(--gold)" id="tv-${pi}">${p.temp.toFixed(1)}</span></div>
+                <input type="range" min="0" max="1" step="0.05" value="${p.temp}" oninput="document.getElementById('tv-${pi}').textContent=parseFloat(this.value).toFixed(1);PIPELINES[${pi}].temp=parseFloat(this.value)">
+                <div style="font-size:10px;color:var(--t4);margin-top:2px">${p.name.includes('요약')||p.name.includes('감정')||p.name.includes('분류')?'낮게 권장 (정확성 우선)':'목적에 맞게 조정'}</div>
+              </div>
+              <div style="flex:1;background:var(--bg1);padding:10px 12px">
+                <div class="flbl">Max Tokens</div>
+                <input class="finput" type="number" value="${p.maxTok}" onchange="PIPELINES[${pi}].maxTok=parseInt(this.value)">
+              </div>
+              <div style="flex:1;background:var(--bg1);padding:10px 12px">
+                <div class="flbl">Top-P <span style="color:var(--gold)" id="tpv-${pi}">${p.topP.toFixed(2)}</span></div>
+                <input type="range" min="0.5" max="1" step="0.01" value="${p.topP}" oninput="document.getElementById('tpv-${pi}').textContent=parseFloat(this.value).toFixed(2);PIPELINES[${pi}].topP=parseFloat(this.value)">
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } else if (i === 1) {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="sec" style="margin-bottom:12px">
+          <div class="sec-hd"><span class="sec-title">RAG 참조 문서 관리</span>
+            <button class="btn sm gold" onclick="showUploadModal()">문서 업로드</button>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>문서명</th><th>유형</th><th>청크 수</th><th>임베딩 상태</th><th>업데이트</th><th>작업</th></tr></thead>
+            <tbody>${[
+              ['상담 가이드라인 v3.2','PDF',148,true,'05-18'],
+              ['제품 FAQ Master','PDF',312,true,'05-18'],
+              ['VIP 서비스 안내서','PDF',88,true,'05-17'],
+              ['환불/교환 정책','PDF',42,true,'05-17'],
+            ].map(([nm,t,ch,em,dt])=>`<tr>
+              <td class="w">${nm}</td><td><span class="tag gray">${t}</span></td><td>${ch}</td>
+              <td><span class="tag ${em?'green':'warn'}">${em?'최신':'업데이트 필요'}</span></td>
+              <td style="font-size:11px;color:var(--t4)">${dt}</td>
+              <td><button class="btn sm" onclick="reembedDoc('${nm}')">재임베딩</button></td>
+            </tr>`).join('')}</tbody>
+          </table></div>
+        </div>
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">검색 파라미터</span></div>
+          <div style="background:var(--bg1)">
+            <div class="metric-row"><div class="mkey">유사도 임계값 (Similarity Threshold)</div>
+              <input type="range" min="0.3" max="0.95" step="0.05" value="0.7" style="width:140px" oninput="document.getElementById('simV').textContent=parseFloat(this.value).toFixed(2)">
+              <span id="simV" style="font-size:12px;color:var(--t1);min-width:34px;text-align:center">0.70</span>
+            </div>
+            <div class="metric-row"><div class="mkey">청크 크기 (토큰)</div>
+              <input type="range" min="128" max="2048" step="64" value="512" style="width:140px" oninput="document.getElementById('chkV').textContent=this.value">
+              <span id="chkV" style="font-size:12px;color:var(--t1);min-width:34px;text-align:center">512</span>
+            </div>
+            <div class="metric-row"><div class="mkey">청크 오버랩 (토큰)</div>
+              <input type="range" min="0" max="256" step="10" value="50" style="width:140px" oninput="document.getElementById('ovlV').textContent=this.value">
+              <span id="ovlV" style="font-size:12px;color:var(--t1);min-width:34px;text-align:center">50</span>
+            </div>
+            <div class="metric-row"><div class="mkey">Top-K 검색 결과</div>
+              <input class="finput" type="number" value="5" style="width:80px">
+            </div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    c.innerHTML = `
+      <div style="padding:14px 16px">
+        <div class="alert info" style="margin-bottom:10px">감정 분석, 인텐트, 신뢰도 등을 기반으로 분기 조건을 설정합니다. 우선순위 순서대로 평가됩니다.</div>
+        <div class="sec">
+          <div class="sec-hd"><span class="sec-title">라우팅 · 분기 규칙 (${ROUTING_RULES.length}건)</span>
+            <button class="btn sm gold" onclick="addRoutingRule()">규칙 추가</button>
+          </div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>우선순위</th><th>조건 (Condition)</th><th>액션 (Action)</th><th>활성</th><th>작업</th></tr></thead>
+            <tbody id="rrTable">${renderRRRows()}</tbody>
+          </table></div>
+        </div>
+        <div style="margin-top:10px;padding:10px 12px;background:var(--bg1);border:1px solid var(--border2)">
+          <div class="flbl" style="margin-bottom:8px">새 분기 규칙 추가</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <input class="finput" id="rrCond" placeholder="조건 (예: 감정 = 매우 분노)" style="flex:1.5;min-width:180px">
+            <input class="finput" id="rrAct"  placeholder="액션 (예: 즉시 상담원 이관)" style="flex:1.5;min-width:180px">
+            <input class="finput" id="rrPri"  type="number" placeholder="우선순위" style="width:90px" value="${ROUTING_RULES.length+1}">
+            <button class="btn gold" onclick="quickAddRR()">추가</button>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+function renderRRRows() {
+  return ROUTING_RULES.map(r=>`<tr>
+    <td style="text-align:center;color:var(--gold);font-weight:500">${r.priority}</td>
+    <td class="w">${r.condition}</td>
+    <td style="color:var(--t2)">${r.action}</td>
+    <td style="text-align:center"><label class="toggle"><input type="checkbox" ${r.active?'checked':''} onchange="toggleRR('${r.id}',this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></td>
+    <td style="white-space:nowrap"><button class="btn sm" onclick="editRR('${r.id}')">편집</button><button class="btn sm red" style="margin-left:3px" onclick="deleteRR('${r.id}')">삭제</button></td>
+  </tr>`).join('');
+}
+function toggleRR(id, v) { const r=ROUTING_RULES.find(x=>x.id===id); if(r) r.active=v; }
+function deleteRR(id) { const i=ROUTING_RULES.findIndex(x=>x.id===id); if(i>-1){ROUTING_RULES.splice(i,1); renderWorkflowTab(2);} }
+function editRR(id) { alert(`[${id}] 분기 규칙 편집 모달`); }
+function addRoutingRule() { alert('새 라우팅 분기 규칙 추가 모달'); }
+function quickAddRR() {
+  const cond=document.getElementById('rrCond')?.value.trim(), act=document.getElementById('rrAct')?.value.trim();
+  if(!cond||!act) return;
+  const pri = parseInt(document.getElementById('rrPri')?.value)||ROUTING_RULES.length+1;
+  ROUTING_RULES.push({id:'RR-'+String(ROUTING_RULES.length+1).padStart(3,'0'),condition:cond,action:act,priority:pri,active:true});
+  renderWorkflowTab(2);
+}
+function togglePipe(idx, v) {
+  PIPELINES[idx].active = v;
+  const tag = document.getElementById('pipe-tag-' + idx);
+  if (tag) {
+    tag.textContent = v ? '활성' : '비활성';
+    tag.className   = 'tag ' + (v ? 'green' : 'gray');
+  }
+}
+function updatePipeModel(idx, v) { PIPELINES[idx].model=v; }
+function reembedDoc(nm) { alert(`"${nm}" 재임베딩을 시작합니다. 완료 후 색인이 자동 갱신됩니다.`); }
+function injectWorkflow() {
+  const activePipes = PIPELINES.filter(p=>p.active).map(p=>`${p.name}(${p.model}, T=${p.temp})`).join(', ');
+  const activeRules = ROUTING_RULES.filter(r=>r.active).length;
+  showInjectToast('wf-inject-status', `파이프라인 ${PIPELINES.filter(p=>p.active).length}개 · 분기 규칙 ${activeRules}건 — 환경 변수 Injection 완료`);
+}
+
+/* ════ INJECT TOAST HELPER ════ */
+function showInjectToast(elId, msg) {
+  const el = document.getElementById(elId);
+  if(!el) return;
+  el.textContent = '⟳ 반영 중…';
+  el.style.color = 'var(--warn)';
+  setTimeout(() => {
+    el.textContent = '✓ ' + msg;
+    el.style.color = 'var(--green)';
+    setTimeout(() => { el.textContent=''; el.style.color=''; }, 5000);
+  }, 800);
+}
+function chipOn(btn) {
+  const strip = btn.closest('.fstrip');
+  if(strip) strip.querySelectorAll('.fchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+</script>
+<!-- ═══ SLIDE PANEL — 대화 원문 + 요약 연결 뷰 ═══ -->
+<div class="sp-overlay" id="spOverlay" onclick="closePanel()"></div>
+<div class="sp-panel" id="spPanel">
+  <div class="sp-hd">
+    <div>
+      <div class="sp-title" id="spTitle">세션 상세</div>
+      <div class="sp-meta" id="spMeta"></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="btn sm" id="spGoSummary" onclick="goToSummaryTab()">요약본 검수로 이동 →</button>
+      <button class="sp-close" onclick="closePanel()" aria-label="닫기">✕</button>
+    </div>
+  </div>
+  <div class="sp-body">
+    <!-- 대화 원문 -->
+    <div class="sp-log">
+      <div class="sp-log-hd">
+        <span>대화 원문</span>
+        <span id="spTurnCount" style="color:var(--t2)"></span>
+      </div>
+      <div class="sp-msgs" id="spMsgs"></div>
+    </div>
+    <!-- 요약 패널 -->
+    <div class="sp-sum">
+      <div class="sp-sum-hd">
+        <span>LLM 생성 요약</span>
+        <span id="spReviewBadge"></span>
+      </div>
+      <div class="sp-sum-body" id="spSumBody"></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

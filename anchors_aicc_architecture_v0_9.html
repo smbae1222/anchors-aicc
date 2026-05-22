@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anchors AI — Architecture L1</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+:root {
+  --cream: #F6F1E9;
+  --cream2: #EDE7DC;
+  --gold: #B08040;
+  --gold2: #C9973A;
+  --gold-dim: rgba(176,128,64,0.12);
+  --gold-line: rgba(176,128,64,0.3);
+  --navy: #1C2B3A;
+  --navy2: #243348;
+  --text: #1E1E1E;
+  --text2: #3A3530;
+  --muted: #6B6258;
+  --white: #FFFFFF;
+  --aws: #FF9900;
+  --aws-dim: rgba(255,153,0,0.10);
+  --green: #107040;
+  --purple: #6B3FA0;
+  --orange: #C05820;
+  --border: rgba(176,128,64,0.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--cream);
+  font-family: 'Pretendard Variable', Pretendard, 'Apple SD Gothic Neo', sans-serif;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* ── 탭 전환 ── */
+.tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--gold-line); margin-bottom: 0; }
+.tab-btn {
+  padding: 14px 32px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -1.5px;
+}
+.tab-btn:hover { color: var(--gold); }
+.tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); font-weight: 600; }
+
+.tab-content { display: block; }
+
+/* ══════════════════════════════════════
+   L1 ARCHITECTURE DIAGRAM
+══════════════════════════════════════ */
+.arch-page {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 40px 48px 56px;
+}
+
+/* 헤더 */
+.arch-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gold-line);
+}
+.arch-title-group {}
+.arch-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.arch-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.arch-title span { color: var(--gold); }
+.arch-meta {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  text-align: right;
+  line-height: 1.8;
+}
+
+/* 레이어 박스 공통 */
+.layer {
+  border: 1px solid var(--border);
+  background: var(--white);
+  margin-bottom: 10px;
+  position: relative;
+}
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream2);
+}
+.layer-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--navy);
+  padding: 2px 6px;
+  min-width: 20px;
+  text-align: center;
+}
+.layer-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: 1;
+}
+.layer-body {
+  padding: 12px 16px;
+}
+
+/* 외부 채널 */
+.channel-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.ch-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  background: var(--navy);
+}
+.ch-icon { font-size: 14px; flex-shrink: 0; }
+.ch-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.92); line-height: 1.3; }
+.ch-sub { font-size: 9.5px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+/* Gateway */
+.gw-box {
+  background: var(--navy2);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gw-label { font-size: 12px; font-weight: 700; color: var(--gold2); letter-spacing: 0.05em; }
+.gw-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.gw-chip {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 3px 8px;
+}
+
+/* Bounded Context 그리드 */
+.ctx-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.ctx-box {
+  border: 1px solid var(--border);
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.ctx-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.ctx-box.chat::before { background: #2E5FA3; }
+.ctx-box.analysis::before { background: var(--green); }
+.ctx-box.agent::before { background: var(--orange); }
+.ctx-box.analytics::before { background: var(--purple); }
+.ctx-head {
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream2);
+}
+.ctx-name { font-size: 10px; font-weight: 700; color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; }
+.ctx-aws { font-size: 9px; color: var(--aws); font-weight: 500; margin-top: 3px; }
+.ctx-svcs { padding: 8px 10px; }
+.ctx-svc {
+  display: flex; align-items: flex-start; gap: 5px;
+  margin-bottom: 5px;
+}
+.ctx-svc:last-child { margin-bottom: 0; }
+.ctx-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.chat .ctx-dot { background: #2E5FA3; }
+.analysis .ctx-dot { background: var(--green); }
+.agent .ctx-dot { background: var(--orange); }
+.analytics .ctx-dot { background: var(--purple); }
+.ctx-svc-name { font-size: 10px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.ctx-svc-sub { font-size: 9px; color: var(--muted); margin-top: 1px; line-height: 1.3; }
+
+/* 중간 4열 레이어 */
+.mid-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.svc-list { display: flex; flex-direction: column; gap: 6px; }
+.svc-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+}
+.svc-item:hover { border-color: var(--gold-line); background: var(--gold-dim); }
+.svc-icon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+  background: var(--aws-dim);
+}
+.svc-name { font-size: 10.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.svc-sub { font-size: 9px; color: var(--muted); margin-top: 1px; line-height: 1.3; }
+
+/* DB 그리드 */
+.db-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.db-box {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  background: var(--cream2);
+  text-align: center;
+}
+.db-icon { font-size: 18px; margin-bottom: 5px; }
+.db-name { font-size: 10.5px; font-weight: 700; color: var(--navy); }
+.db-sub { font-size: 9px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+/* 거버넌스 바 */
+.gov-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--gold);
+  margin-top: 10px;
+}
+.gov-label { font-size: 9px; font-weight: 700; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-right: 4px; white-space: nowrap; }
+.gov-chip {
+  font-size: 9.5px; font-weight: 500;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text2);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* 화살표 */
+.flow-down {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16px;
+  margin: 2px 0;
+}
+.flow-down svg { color: var(--gold); }
+
+/* ══════════════════════════════════════
+   USER FLOW DIAGRAM
+══════════════════════════════════════ */
+.flow-page {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 40px 48px 56px;
+}
+
+.flow-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gold-line);
+}
+
+/* 플로우 레인 */
+.swim-lanes {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+}
+.lane-headers {
+  display: contents;
+}
+.lane-label-col {
+  background: var(--navy);
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.lane-label {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--gold2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.4;
+  writing-mode: horizontal-tb;
+}
+.lane-content-col {
+  border-left: 1px solid var(--border);
+}
+.lane-row {
+  min-height: 72px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.lane-row:last-child { border-bottom: none; }
+
+/* 플로우 노드 */
+.fn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  position: relative;
+  min-width: 120px;
+}
+.fn.start { background: var(--navy); border-color: var(--navy); }
+.fn.start .fn-label { color: var(--white); }
+.fn.decision { background: var(--gold-dim); border-color: var(--gold-line); border-style: dashed; }
+.fn.action { background: var(--aws-dim); border-color: rgba(255,153,0,0.32); }
+.fn.success { background: rgba(16,112,64,0.08); border-color: rgba(16,112,64,0.3); }
+.fn.escalate { background: rgba(192,88,32,0.08); border-color: rgba(192,88,32,0.3); }
+.fn.end { background: var(--cream2); border-color: var(--gold-line); }
+.fn-icon { font-size: 13px; flex-shrink: 0; }
+.fn-label { font-size: 10.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.fn-sub { font-size: 9px; color: var(--muted); margin-top: 1px; }
+
+/* 화살표 연결 */
+.fn-arrow {
+  font-size: 13px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.fn-arrow.down {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 2px 0;
+  font-size: 14px;
+}
+
+/* 분기 배지 */
+.branch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 0;
+  letter-spacing: 0.05em;
+}
+.branch.yes { background: rgba(16,112,64,0.12); color: var(--green); border: 1px solid rgba(16,112,64,0.25); }
+.branch.no { background: rgba(192,88,32,0.12); color: var(--orange); border: 1px solid rgba(192,88,32,0.25); }
+.branch.vip { background: rgba(107,63,160,0.12); color: var(--purple); border: 1px solid rgba(107,63,160,0.25); }
+
+/* 신뢰도 범례 */
+.conf-legend {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+}
+.conf-item { display: flex; align-items: center; gap: 6px; }
+.conf-bar { width: 28px; height: 6px; }
+.conf-bar.high { background: var(--green); }
+.conf-bar.mid { background: var(--gold); }
+.conf-bar.low { background: var(--orange); }
+.conf-label { font-size: 10px; font-weight: 500; color: var(--text2); }
+.conf-sep { color: var(--border); margin: 0 4px; }
+
+/* 시나리오 요약 */
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 24px;
+}
+.scenario-box {
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.sc-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.sc-title { font-size: 11.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.sc-steps { display: flex; flex-direction: column; gap: 3px; }
+.sc-step {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 10px; color: var(--text2); line-height: 1.4;
+}
+.sc-step-num {
+  font-size: 8.5px; font-weight: 700; color: var(--white);
+  background: var(--navy);
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.sc-tag {
+  display: inline-block;
+  font-size: 8.5px; font-weight: 600;
+  padding: 1px 6px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.sc-tag.ai { background: var(--aws-dim); color: var(--aws); border: 1px solid rgba(255,153,0,0.28); }
+.sc-tag.agent { background: rgba(192,88,32,0.1); color: var(--orange); border: 1px solid rgba(192,88,32,0.2); }
+.sc-tag.vip { background: rgba(107,63,160,0.1); color: var(--purple); border: 1px solid rgba(107,63,160,0.2); }
+
+/* 범례 */
+.legend-row {
+  display: flex; align-items: center; gap: 20px;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gold-line);
+  flex-wrap: wrap;
+}
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--muted); font-weight: 400; }
+.leg-box { width: 14px; height: 14px; border: 1.5px solid; }
+.leg-box.start { background: var(--navy); border-color: var(--navy); }
+.leg-box.decision { background: var(--gold-dim); border-color: var(--gold-line); border-style: dashed; }
+.leg-box.action { background: var(--aws-dim); border-color: rgba(255,153,0,0.38); }
+.leg-box.success { background: rgba(16,112,64,0.1); border-color: rgba(16,112,64,0.4); }
+.leg-box.escalate { background: rgba(192,88,32,0.1); border-color: rgba(192,88,32,0.4); }
+
+/* 푸터 */
+.page-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gold-line);
+}
+.footer-logo { font-size: 11px; font-weight: 700; letter-spacing: 0.25em; color: var(--navy); text-transform: uppercase; }
+.footer-sub { font-size: 9.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; }
+</style>
+</style>
+</head>
+<body>
+
+<div id="tab-arch" class="tab-content active">
+<div class="arch-page">
+
+  <!-- 헤더 -->
+  <div class="arch-header">
+    <div class="arch-title-group">
+      <div class="arch-eyebrow">Level 1 · System Architecture</div>
+      <div class="arch-title">Anchors AI <span>상담 솔루션</span> — 아키텍처 개요</div>
+    </div>
+    <div class="arch-meta">
+      AWS 기반 · DDD + Layered Architecture<br>
+      2026.05
+    </div>
+  </div>
+
+  <!-- L1: 외부 채널 -->
+  <div class="layer" style="border-top:2px solid var(--navy);">
+    <div class="layer-header" style="background:var(--navy);">
+      <span class="layer-num" style="background:rgba(255,255,255,0.15);">EXT</span>
+      <span class="layer-name" style="color:var(--gold2);">External Channels — 외부 채널 진입점</span>
+    </div>
+    <div class="layer-body" style="background:var(--navy);padding:10px 16px;">
+      <div class="channel-row">
+        <div class="ch-box">
+          <div class="ch-icon">💬</div>
+          <div>
+            <div class="ch-label">카카오 상담톡</div>
+            <div class="ch-sub">Webhook API · 비즈메시지 API</div>
+          </div>
+        </div>
+        <div class="ch-box">
+          <div class="ch-icon">🏢</div>
+          <div>
+            <div class="ch-label">CRM</div>
+            <div class="ch-sub">고객 조회 · 이력 배치 저장</div>
+          </div>
+        </div>
+        <div class="ch-box">
+          <div class="ch-icon">👤</div>
+          <div>
+            <div class="ch-label">상담원 / Admin UI</div>
+            <div class="ch-sub">라이브챗 · 인수인계 · 대시보드</div>
+          </div>
+        </div>
+        <div class="ch-box">
+          <div class="ch-icon">📱</div>
+          <div>
+            <div class="ch-label">Business Consumption</div>
+            <div class="ch-sub">Web / Mobile · Partner · Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-down">
+    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2v10M4 9l4 4 4-4" stroke="var(--gold)" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <!-- L2: API Gateway -->
+  <div class="layer" style="margin-bottom:10px;">
+    <div class="gw-box">
+      <div>
+        <div style="font-size:9px;font-weight:600;color:var(--gold2);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;">API Gateway / Security & Traffic Mgmt.</div>
+        <div class="gw-label">Amazon API Gateway</div>
+      </div>
+      <div class="gw-chips">
+        <span class="gw-chip">JWT 인증</span>
+        <span class="gw-chip">RBAC</span>
+        <span class="gw-chip">Rate Limit</span>
+        <span class="gw-chip">AWS WAF</span>
+        <span class="gw-chip">DDoS Protection</span>
+        <span class="gw-chip">Message Preprocessing (PII 마스킹 · 금칙어)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-down">
+    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2v10M4 9l4 4 4-4" stroke="var(--gold)" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <!-- L3: Bounded Context -->
+  <div class="layer">
+    <div class="layer-header">
+      <span class="layer-num">BIZ</span>
+      <span class="layer-name">Business Logic — DDD Bounded Contexts</span>
+      <span style="font-size:9px;color:var(--muted);font-weight:400;">Spring Boot / FastAPI · AWS Fargate (ECS) / App Runner</span>
+    </div>
+    <div class="layer-body">
+      <div class="ctx-grid">
+        <!-- Chat Routing -->
+        <div class="ctx-box chat">
+          <div class="ctx-head">
+            <div class="ctx-name">Chat Routing</div>
+            <div class="ctx-aws">AWS Fargate (ECS)</div>
+          </div>
+          <div class="ctx-svcs">
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">ChatRoutingService</div><div class="ctx-svc-sub">오케스트레이터 · 신뢰도 분기</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">ClarificationService</div><div class="ctx-svc-sub">재질문 / 선택지 제시</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">VIPPriorityService</div><div class="ctx-svc-sub">VIP 즉시 이관 · HIGH 큐</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Context Analysis -->
+        <div class="ctx-box analysis">
+          <div class="ctx-head">
+            <div class="ctx-name">Context Analysis</div>
+            <div class="ctx-aws">App Runner + Bedrock</div>
+          </div>
+          <div class="ctx-svcs">
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">ContextAnalysisService</div><div class="ctx-svc-sub">발화 의도 · 신뢰도 반환</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">KnowledgeBase</div><div class="ctx-svc-sub">유사어 룰 · VersionTag</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">Amazon Bedrock + OpenSearch</div><div class="ctx-svc-sub">Claude · Vector 검색</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Agent Allocation -->
+        <div class="ctx-box agent">
+          <div class="ctx-head">
+            <div class="ctx-name">Agent Allocation</div>
+            <div class="ctx-aws">AWS Fargate (ECS)</div>
+          </div>
+          <div class="ctx-svcs">
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">AgentAllocationService</div><div class="ctx-svc-sub">스킬·부하 기반 배정</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">Priority Queue</div><div class="ctx-svc-sub">VIP=HIGH · 일반=NORMAL</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">AWS AppSync</div><div class="ctx-svc-sub">상담원 화면 WebSocket 실시간 푸시</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Analytics -->
+        <div class="ctx-box analytics">
+          <div class="ctx-head">
+            <div class="ctx-name">Analytics</div>
+            <div class="ctx-aws">Amazon EMR + Redshift</div>
+          </div>
+          <div class="ctx-svcs">
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">TopicAnalyzer · Sentiment</div><div class="ctx-svc-sub">토픽 모델링 · 감성 분석</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">AlertService</div><div class="ctx-svc-sub">실시간 임계치 탐지</div></div>
+            </div>
+            <div class="ctx-svc">
+              <div class="ctx-dot"></div>
+              <div><div class="ctx-svc-name">RetrainingPipeline</div><div class="ctx-svc-sub">MLOps · Amazon SageMaker</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-down">
+    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2v10M4 9l4 4 4-4" stroke="var(--gold)" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <!-- L4: Integration & Messaging 4열 -->
+  <div class="layer">
+    <div class="layer-header">
+      <span class="layer-num">INT</span>
+      <span class="layer-name">Integration, AI & Data Processing</span>
+    </div>
+    <div class="layer-body">
+      <div class="mid-grid">
+        <!-- Ingestion -->
+        <div>
+          <div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);">Ingestion</div>
+          <div class="svc-list">
+            <div class="svc-item">
+              <div class="svc-icon">⚡</div>
+              <div><div class="svc-name">Amazon MSK</div><div class="svc-sub">Managed Kafka · DLQ · 비동기 처리</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">🏭</div>
+              <div><div class="svc-name">AWS Glue</div><div class="svc-sub">ETL 파이프라인 · Data Catalog</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">🔗</div>
+              <div><div class="svc-name">Amazon SQS + EventBridge</div><div class="svc-sub">Message Queue · Event Routing</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- AI & ML -->
+        <div style="background:var(--aws-dim);padding:10px;border:1px solid rgba(255,153,0,0.22);">
+          <div style="font-size:9px;font-weight:700;color:var(--aws);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(255,153,0,0.28);">AI & ML</div>
+          <div class="svc-list">
+            <div class="svc-item">
+              <div class="svc-icon">🤖</div>
+              <div><div class="svc-name">Amazon Bedrock</div><div class="svc-sub">Claude · LangChain</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">🔍</div>
+              <div><div class="svc-name">Amazon OpenSearch</div><div class="svc-sub">Vector DB · 하이브리드 검색</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">🧪</div>
+              <div><div class="svc-name">Amazon SageMaker</div><div class="svc-sub">재학습 · 카나리 배포</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Data Processing -->
+        <div>
+          <div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);">Data Processing</div>
+          <div class="svc-list">
+            <div class="svc-item">
+              <div class="svc-icon">🔥</div>
+              <div><div class="svc-name">Amazon EMR</div><div class="svc-sub">Spark 배치 분석 · ETL</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">📈</div>
+              <div><div class="svc-name">Amazon Redshift</div><div class="svc-sub">대규모 분석 · 마케팅 인사이트</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">⚡</div>
+              <div><div class="svc-name">Amazon Kinesis Data Analytics</div><div class="svc-sub">실시간 이벤트 · 이상 탐지</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Application -->
+        <div>
+          <div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);">Application & Presentation</div>
+          <div class="svc-list">
+            <div class="svc-item">
+              <div class="svc-icon">🌐</div>
+              <div><div class="svc-name">Amazon CloudFront</div><div class="svc-sub">글로벌 CDN · SSL</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">⚡</div>
+              <div><div class="svc-name">AWS Lambda</div><div class="svc-sub">CSAT · 세션 종료 · 알림</div></div>
+            </div>
+            <div class="svc-item">
+              <div class="svc-icon">📦</div>
+              <div><div class="svc-name">AWS Fargate (ECS)</div><div class="svc-sub">Microservice Hosting</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-down">
+    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2v10M4 9l4 4 4-4" stroke="var(--gold)" stroke-width="1.5" fill="none"/></svg>
+  </div>
+
+  <!-- L5: Database -->
+  <div class="layer">
+    <div class="layer-header">
+      <span class="layer-num">DB</span>
+      <span class="layer-name">Database Layer</span>
+    </div>
+    <div class="layer-body">
+      <div class="db-grid">
+        <div class="db-box">
+          <div class="db-icon">🐘</div>
+          <div class="db-name">Amazon RDS for PostgreSQL</div>
+          <div class="db-sub">세션 · 상담원 · 티켓 · CSAT</div>
+        </div>
+        <div class="db-box">
+          <div class="db-icon">🔍</div>
+          <div class="db-name">Amazon OpenSearch</div>
+          <div class="db-sub">임베딩 · 지식 베이스</div>
+        </div>
+        <div class="db-box">
+          <div class="db-icon">🏔️</div>
+          <div class="db-name">Amazon S3 (Data Lake)</div>
+          <div class="db-sub">학습 데이터 · 분석 원본</div>
+        </div>
+        <div class="db-box">
+          <div class="db-icon">⚡</div>
+          <div class="db-name">Amazon ElastiCache for Redis</div>
+          <div class="db-sub">CRM 조회 캐시 · 세션</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Governance -->
+  <div class="gov-row">
+    <span class="gov-label">Governance</span>
+    <div class="gov-chip">🟠 AWS Glue Data Catalog</div>
+    <div class="gov-chip">🔑 AWS Secrets Manager</div>
+    <div class="gov-chip">📊 Amazon CloudWatch</div>
+    <div class="gov-chip">👤 AWS IAM Identity Center</div>
+    <div class="gov-chip">📋 AWS Config</div>
+    <div class="gov-chip">💰 AWS Cost Explorer</div>
+    <div class="gov-chip">🔍 OpenTelemetry</div>
+  </div>
+
+  <!-- 푸터 -->
+  <div class="page-footer">
+    <div class="footer-logo">Anchors · AI Platform Architecture</div>
+    <div class="footer-sub">Overview · AWS 기반 DDD + Layered · 2026.05</div>
+  </div>
+
+</div>
+</div><!-- /tab-arch -->
+
+</body>
+</html>

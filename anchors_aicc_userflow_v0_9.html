@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anchors AI — User Flow</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+:root {
+  --cream: #F6F1E9;
+  --cream2: #EDE7DC;
+  --gold: #B08040;
+  --gold2: #C9973A;
+  --gold-dim: rgba(176,128,64,0.12);
+  --gold-line: rgba(176,128,64,0.3);
+  --navy: #1C2B3A;
+  --navy2: #243348;
+  --text: #1E1E1E;
+  --text2: #3A3530;
+  --muted: #6B6258;
+  --white: #FFFFFF;
+  --azure: #0078D4;
+  --azure-dim: rgba(0,120,212,0.08);
+  --green: #107040;
+  --purple: #6B3FA0;
+  --orange: #C05820;
+  --border: rgba(176,128,64,0.22);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--cream);
+  font-family: 'Pretendard Variable', Pretendard, 'Apple SD Gothic Neo', sans-serif;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* ── 탭 전환 ── */
+.tabs { display: flex; gap: 0; border-bottom: 1.5px solid var(--gold-line); margin-bottom: 0; }
+.tab-btn {
+  padding: 14px 32px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -1.5px;
+}
+.tab-btn:hover { color: var(--gold); }
+.tab-btn.active { color: var(--navy); border-bottom-color: var(--gold); font-weight: 600; }
+
+.tab-content { display: block; }
+
+/* ══════════════════════════════════════
+   L1 ARCHITECTURE DIAGRAM
+══════════════════════════════════════ */
+.arch-page {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 40px 48px 56px;
+}
+
+/* 헤더 */
+.arch-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gold-line);
+}
+.arch-title-group {}
+.arch-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.arch-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.arch-title span { color: var(--gold); }
+.arch-meta {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  text-align: right;
+  line-height: 1.8;
+}
+
+/* 레이어 박스 공통 */
+.layer {
+  border: 1px solid var(--border);
+  background: var(--white);
+  margin-bottom: 10px;
+  position: relative;
+}
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream2);
+}
+.layer-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--navy);
+  padding: 2px 6px;
+  min-width: 20px;
+  text-align: center;
+}
+.layer-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: 1;
+}
+.layer-body {
+  padding: 12px 16px;
+}
+
+/* 외부 채널 */
+.channel-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.ch-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  background: var(--navy);
+}
+.ch-icon { font-size: 14px; flex-shrink: 0; }
+.ch-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.92); line-height: 1.3; }
+.ch-sub { font-size: 9.5px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+/* Gateway */
+.gw-box {
+  background: var(--navy2);
+  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gw-label { font-size: 12px; font-weight: 700; color: var(--gold2); letter-spacing: 0.05em; }
+.gw-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.gw-chip {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 3px 8px;
+}
+
+/* Bounded Context 그리드 */
+.ctx-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.ctx-box {
+  border: 1px solid var(--border);
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.ctx-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.ctx-box.chat::before { background: #2E5FA3; }
+.ctx-box.analysis::before { background: var(--green); }
+.ctx-box.agent::before { background: var(--orange); }
+.ctx-box.analytics::before { background: var(--purple); }
+.ctx-head {
+  padding: 8px 10px 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--cream2);
+}
+.ctx-name { font-size: 10px; font-weight: 700; color: var(--navy); letter-spacing: 0.04em; text-transform: uppercase; }
+.ctx-azure { font-size: 9px; color: var(--azure); font-weight: 500; margin-top: 3px; }
+.ctx-svcs { padding: 8px 10px; }
+.ctx-svc {
+  display: flex; align-items: flex-start; gap: 5px;
+  margin-bottom: 5px;
+}
+.ctx-svc:last-child { margin-bottom: 0; }
+.ctx-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.chat .ctx-dot { background: #2E5FA3; }
+.analysis .ctx-dot { background: var(--green); }
+.agent .ctx-dot { background: var(--orange); }
+.analytics .ctx-dot { background: var(--purple); }
+.ctx-svc-name { font-size: 10px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.ctx-svc-sub { font-size: 9px; color: var(--muted); margin-top: 1px; line-height: 1.3; }
+
+/* 중간 4열 레이어 */
+.mid-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.svc-list { display: flex; flex-direction: column; gap: 6px; }
+.svc-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+}
+.svc-item:hover { border-color: var(--gold-line); background: var(--gold-dim); }
+.svc-icon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+  background: var(--azure-dim);
+}
+.svc-name { font-size: 10.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.svc-sub { font-size: 9px; color: var(--muted); margin-top: 1px; line-height: 1.3; }
+
+/* DB 그리드 */
+.db-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.db-box {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  background: var(--cream2);
+  text-align: center;
+}
+.db-icon { font-size: 18px; margin-bottom: 5px; }
+.db-name { font-size: 10.5px; font-weight: 700; color: var(--navy); }
+.db-sub { font-size: 9px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+/* 거버넌스 바 */
+.gov-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--gold);
+  margin-top: 10px;
+}
+.gov-label { font-size: 9px; font-weight: 700; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; margin-right: 4px; white-space: nowrap; }
+.gov-chip {
+  font-size: 9.5px; font-weight: 500;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text2);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* 화살표 */
+.flow-down {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16px;
+  margin: 2px 0;
+}
+.flow-down svg { color: var(--gold); }
+
+/* ══════════════════════════════════════
+   USER FLOW DIAGRAM
+══════════════════════════════════════ */
+.flow-page {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 40px 48px 56px;
+}
+
+.flow-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gold-line);
+}
+
+/* 플로우 레인 */
+.swim-lanes {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+}
+.lane-headers {
+  display: contents;
+}
+.lane-label-col {
+  background: var(--navy);
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.lane-label {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--gold2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.4;
+  writing-mode: horizontal-tb;
+}
+.lane-content-col {
+  border-left: 1px solid var(--border);
+}
+.lane-row {
+  min-height: 72px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.lane-row:last-child { border-bottom: none; }
+
+/* 플로우 노드 */
+.fn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  position: relative;
+  min-width: 120px;
+}
+.fn.start { background: var(--navy); border-color: var(--navy); }
+.fn.start .fn-label { color: var(--white); }
+.fn.decision { background: var(--gold-dim); border-color: var(--gold-line); border-style: dashed; }
+.fn.action { background: var(--azure-dim); border-color: rgba(0,120,212,0.25); }
+.fn.success { background: rgba(16,112,64,0.08); border-color: rgba(16,112,64,0.3); }
+.fn.escalate { background: rgba(192,88,32,0.08); border-color: rgba(192,88,32,0.3); }
+.fn.end { background: var(--cream2); border-color: var(--gold-line); }
+.fn-icon { font-size: 13px; flex-shrink: 0; }
+.fn-label { font-size: 10.5px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.fn-sub { font-size: 9px; color: var(--muted); margin-top: 1px; }
+
+/* 화살표 연결 */
+.fn-arrow {
+  font-size: 13px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.fn-arrow.down {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 2px 0;
+  font-size: 14px;
+}
+
+/* 분기 배지 */
+.branch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 0;
+  letter-spacing: 0.05em;
+}
+.branch.yes { background: rgba(16,112,64,0.12); color: var(--green); border: 1px solid rgba(16,112,64,0.25); }
+.branch.no { background: rgba(192,88,32,0.12); color: var(--orange); border: 1px solid rgba(192,88,32,0.25); }
+.branch.vip { background: rgba(107,63,160,0.12); color: var(--purple); border: 1px solid rgba(107,63,160,0.25); }
+
+/* 신뢰도 범례 */
+.conf-legend {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+}
+.conf-item { display: flex; align-items: center; gap: 6px; }
+.conf-bar { width: 28px; height: 6px; }
+.conf-bar.high { background: var(--green); }
+.conf-bar.mid { background: var(--gold); }
+.conf-bar.low { background: var(--orange); }
+.conf-label { font-size: 10px; font-weight: 500; color: var(--text2); }
+.conf-sep { color: var(--border); margin: 0 4px; }
+
+/* 시나리오 요약 */
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 24px;
+}
+.scenario-box {
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  background: var(--white);
+}
+.sc-num {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.sc-title { font-size: 11.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.sc-steps { display: flex; flex-direction: column; gap: 3px; }
+.sc-step {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 10px; color: var(--text2); line-height: 1.4;
+}
+.sc-step-num {
+  font-size: 8.5px; font-weight: 700; color: var(--white);
+  background: var(--navy);
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.sc-tag {
+  display: inline-block;
+  font-size: 8.5px; font-weight: 600;
+  padding: 1px 6px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.sc-tag.ai { background: var(--azure-dim); color: var(--azure); border: 1px solid rgba(0,120,212,0.2); }
+.sc-tag.agent { background: rgba(192,88,32,0.1); color: var(--orange); border: 1px solid rgba(192,88,32,0.2); }
+.sc-tag.vip { background: rgba(107,63,160,0.1); color: var(--purple); border: 1px solid rgba(107,63,160,0.2); }
+
+/* 범례 */
+.legend-row {
+  display: flex; align-items: center; gap: 20px;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gold-line);
+  flex-wrap: wrap;
+}
+.leg-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--muted); font-weight: 400; }
+.leg-box { width: 14px; height: 14px; border: 1.5px solid; }
+.leg-box.start { background: var(--navy); border-color: var(--navy); }
+.leg-box.decision { background: var(--gold-dim); border-color: var(--gold-line); border-style: dashed; }
+.leg-box.action { background: var(--azure-dim); border-color: rgba(0,120,212,0.3); }
+.leg-box.success { background: rgba(16,112,64,0.1); border-color: rgba(16,112,64,0.4); }
+.leg-box.escalate { background: rgba(192,88,32,0.1); border-color: rgba(192,88,32,0.4); }
+
+/* 푸터 */
+.page-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gold-line);
+}
+.footer-logo { font-size: 11px; font-weight: 700; letter-spacing: 0.25em; color: var(--navy); text-transform: uppercase; }
+.footer-sub { font-size: 9.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.05em; }
+</style>
+</style>
+</head>
+<body>
+
+<div id="tab-flow" class="tab-content">
+<div class="flow-page">
+
+  <!-- 헤더 -->
+  <div class="flow-header">
+    <div>
+      <div class="arch-eyebrow">User Flow · 고객 상담 시나리오</div>
+      <div class="arch-title">Anchors AI <span>상담 흐름</span> — 전체 시나리오</div>
+    </div>
+    <div class="arch-meta">
+      카카오 상담톡 인입 → AI 응대 → 상담원 이관<br>
+      6개 핵심 시나리오 · ChatSession 상태 전이 기반
+    </div>
+  </div>
+
+  <!-- 신뢰도 범례 -->
+  <div class="conf-legend">
+    <span style="font-size:10px;font-weight:600;color:var(--navy);margin-right:8px;">신뢰도 임계치</span>
+    <div class="conf-item"><div class="conf-bar high"></div><span class="conf-label">≥ 80% → 자동 응답</span></div>
+    <span class="conf-sep">|</span>
+    <div class="conf-item"><div class="conf-bar mid"></div><span class="conf-label">60~80% → 재질문</span></div>
+    <span class="conf-sep">|</span>
+    <div class="conf-item"><div class="conf-bar low"></div><span class="conf-label">< 60% → 상담원 이관</span></div>
+    <span class="conf-sep">|</span>
+    <span style="font-size:10px;color:var(--muted);">실패 N=3회 누적 시 강제 이관</span>
+  </div>
+
+  <!-- 메인 플로우: 스윔레인 -->
+  <div class="swim-lanes" style="margin-top:16px;">
+    <!-- 레인 1: 고객 -->
+    <div class="lane-label" style="background:var(--navy);">고객<br>(Customer)</div>
+    <div class="lane-row" style="background:rgba(28,43,58,0.03);">
+      <div class="fn start">
+        <div class="fn-icon">💬</div>
+        <div><div class="fn-label">카카오 상담톡</div><div class="fn-sub">문의 입력</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn">
+        <div class="fn-icon">📤</div>
+        <div><div class="fn-label">메시지 전송</div><div class="fn-sub">자연어 발화</div></div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="fn success">
+        <div class="fn-icon">✅</div>
+        <div><div class="fn-label">AI 답변 수신</div><div class="fn-sub">즉각 응답</div></div>
+      </div>
+      <div class="fn-arrow">or</div>
+      <div class="fn escalate">
+        <div class="fn-icon">👤</div>
+        <div><div class="fn-label">상담원 연결</div><div class="fn-sub">라이브챗</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn end">
+        <div class="fn-icon">⭐</div>
+        <div><div class="fn-label">CSAT 평가</div><div class="fn-sub">별점 1~5</div></div>
+      </div>
+    </div>
+
+    <!-- 레인 2: API Gateway -->
+    <div class="lane-label" style="background:var(--navy2);">API<br>Gateway</div>
+    <div class="lane-row">
+      <div class="fn action">
+        <div class="fn-icon">⚡</div>
+        <div><div class="fn-label">웹훅 수신</div><div class="fn-sub">200 OK 즉시 반환</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">🛡️</div>
+        <div><div class="fn-label">PII 마스킹</div><div class="fn-sub">금칙어 탐지</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">📨</div>
+        <div><div class="fn-label">Event Hubs 발행</div><div class="fn-sub">비동기 큐 전달</div></div>
+      </div>
+    </div>
+
+    <!-- 레인 3: ChatRoutingService -->
+    <div class="lane-label" style="background:var(--navy);">Chat<br>Routing</div>
+    <div class="lane-row">
+      <div class="fn action">
+        <div class="fn-icon">⚙️</div>
+        <div><div class="fn-label">ChatSession</div><div class="fn-sub">세션 생성·조회</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn decision" style="border-style:dashed;">
+        <div class="fn-icon">👑</div>
+        <div>
+          <div class="fn-label">VIP 확인</div>
+          <div class="fn-sub">Salesforce 조회</div>
+          <div style="margin-top:4px;"><span class="branch vip">VIP → 즉시 이관 가능</span></div>
+        </div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn decision" style="border-style:dashed;">
+        <div class="fn-icon">📊</div>
+        <div>
+          <div class="fn-label">신뢰도 판단</div>
+          <div class="fn-sub">임계치 3단계</div>
+          <div style="margin-top:4px;display:flex;gap:4px;">
+            <span class="branch yes">≥80%</span>
+            <span class="branch no">&lt;60%</span>
+          </div>
+        </div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn success">
+        <div class="fn-icon">💬</div>
+        <div><div class="fn-label">자동 응답 발송</div><div class="fn-sub">KakaoApiClient</div></div>
+      </div>
+    </div>
+
+    <!-- 레인 4: Context Analysis -->
+    <div class="lane-label" style="background:var(--navy2);">Context<br>Analysis</div>
+    <div class="lane-row">
+      <div class="fn action">
+        <div class="fn-icon">🧠</div>
+        <div><div class="fn-label">의도 분석</div><div class="fn-sub">Azure OpenAI</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">🔍</div>
+        <div><div class="fn-label">KB 검색</div><div class="fn-sub">Azure AI Search</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn decision" style="border-style:dashed;">
+        <div class="fn-icon">📈</div>
+        <div>
+          <div class="fn-label">신뢰도 산정</div>
+          <div class="fn-sub">confidenceScore 반환</div>
+          <div style="margin-top:4px;"><span class="branch no">60~80% → ClarificationService</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 레인 5: Agent Allocation -->
+    <div class="lane-label" style="background:var(--navy);">Agent<br>Allocation</div>
+    <div class="lane-row">
+      <div class="fn escalate">
+        <div class="fn-icon">🎯</div>
+        <div><div class="fn-label">상담원 필터링</div><div class="fn-sub">스킬 · 부하 · 근무상태</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn escalate">
+        <div class="fn-icon">⚖️</div>
+        <div><div class="fn-label">우선순위 스코어링</div><div class="fn-sub">VIP_CAPABLE 가산</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn escalate">
+        <div class="fn-icon">📋</div>
+        <div><div class="fn-label">HandoverSummary</div><div class="fn-sub">인수인계 카드 생성</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">📡</div>
+        <div><div class="fn-label">SignalR 푸시</div><div class="fn-sub">상담원 화면 알림</div></div>
+      </div>
+    </div>
+
+    <!-- 레인 6: Analytics -->
+    <div class="lane-label" style="background:var(--navy2);">Analytics<br>/ MLOps</div>
+    <div class="lane-row">
+      <div class="fn action">
+        <div class="fn-icon">📊</div>
+        <div><div class="fn-label">CSAT 수집</div><div class="fn-sub">PostgreSQL 저장</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">🔄</div>
+        <div><div class="fn-label">SessionClosed 이벤트</div><div class="fn-sub">Salesforce 배치 저장</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">🧬</div>
+        <div><div class="fn-label">학습 데이터 적재</div><div class="fn-sub">Data Lake Gen2</div></div>
+      </div>
+      <div class="fn-arrow">→</div>
+      <div class="fn action">
+        <div class="fn-icon">🚀</div>
+        <div><div class="fn-label">MLOps 재학습</div><div class="fn-sub">카나리 배포 · MLflow</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6개 시나리오 요약 -->
+  <div style="margin-top:28px;">
+    <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;">핵심 시나리오 — 6개</div>
+    <div class="scenario-grid">
+      <div class="scenario-box">
+        <div class="sc-num">SCENARIO 01</div>
+        <div class="sc-title">FAQ 자동 해결 <span class="sc-tag ai">AI</span></div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">1</div>고객 문의 인입 → 의도 분석</div>
+          <div class="sc-step"><div class="sc-step-num">2</div>신뢰도 ≥ 80% → KB 매칭 성공</div>
+          <div class="sc-step"><div class="sc-step-num">3</div>AI 자동 응답 발송 → CSAT</div>
+        </div>
+      </div>
+      <div class="scenario-box">
+        <div class="sc-num">SCENARIO 02</div>
+        <div class="sc-title">재질문 후 해결 <span class="sc-tag ai">AI</span></div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">1</div>신뢰도 60~80% → 재질문 제시</div>
+          <div class="sc-step"><div class="sc-step-num">2</div>고객 재응답 → 의도 재분석</div>
+          <div class="sc-step"><div class="sc-step-num">3</div>신뢰도 ≥ 80% → 자동 응답</div>
+        </div>
+      </div>
+      <div class="scenario-box">
+        <div class="sc-num">SCENARIO 03</div>
+        <div class="sc-title">VIP 핸드오버 <span class="sc-tag vip">VIP</span></div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">1</div>VIP 고객 감지 (Salesforce)</div>
+          <div class="sc-step"><div class="sc-step-num">2</div>고난도 주제 → 즉시 ESCALATING</div>
+          <div class="sc-step"><div class="sc-step-num">3</div>VIP_CAPABLE 상담원 우선 배정</div>
+        </div>
+      </div>
+      <div class="scenario-box">
+        <div class="sc-num">SCENARIO 04</div>
+        <div class="sc-title">정책 문의 응대 <span class="sc-tag ai">AI</span></div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">1</div>환불/교환 정책 문의 인입</div>
+          <div class="sc-step"><div class="sc-step-num">2</div>KB 정책 문서 검색 → 응답</div>
+          <div class="sc-step"><div class="sc-step-num">3</div>상담원 연결 옵션 제공</div>
+        </div>
+      </div>
+      <div class="scenario-box">
+        <div class="sc-num">SCENARIO 05</div>
+        <div class="sc-title">고객 만족 종료 <span class="sc-tag ai">AI</span></div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">1</div>AI 응답 완료 → CSAT 발송</div>
+          <div class="sc-step"><div class="sc-step-num">2</div>별점 수집 → PostgreSQL 저장</div>
+          <div class="sc-step"><div class="sc-step-num">3</div>Salesforce 배치 이력 저장</div>
+        </div>
+      </div>
+      <div class="scenario-box">
+        <div class="sc-num">SCENARIO 06</div>
+        <div class="sc-title">고객 불만 이관 <span class="sc-tag agent">상담원</span></div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">1</div>부정 감성 감지 → 연속 실패 N=3</div>
+          <div class="sc-step"><div class="sc-step-num">2</div>즉시 ESCALATING → 상담원 배정</div>
+          <div class="sc-step"><div class="sc-step-num">3</div>HandoverSummary 전달 → 라이브챗</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 범례 -->
+  <div class="legend-row">
+    <span style="font-size:10px;font-weight:600;color:var(--navy);margin-right:4px;">범례</span>
+    <div class="leg-item"><div class="leg-box start"></div>시작/종료</div>
+    <div class="leg-item"><div class="leg-box decision"></div>판단/분기</div>
+    <div class="leg-item"><div class="leg-box action"></div>처리/서비스</div>
+    <div class="leg-item"><div class="leg-box success"></div>성공/완료</div>
+    <div class="leg-item"><div class="leg-box escalate"></div>이관/에스컬레이션</div>
+    <div style="flex:1;"></div>
+    <div class="footer-logo" style="font-size:11px;">Anchors · AI Platform</div>
+  </div>
+
+  <div class="page-footer" style="margin-top:16px;">
+    <div class="footer-sub">User Flow · 카카오 상담톡 기반 · ChatSession 상태 전이 · 2026.05</div>
+  </div>
+
+</div>
+</div><!-- /tab-flow -->
+
+</body>
+</html>
